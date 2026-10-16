@@ -1,0 +1,29 @@
+{
+  "name": "college-group-project",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Full-Stack MERN Architecture Foundation for College Group Project",
+  "workspaces": [
+    "Backend",
+    "Frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n \"BACKEND,FRONTEND\" -c \"blue.bold,cyan.bold\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm --prefix Backend run dev",
+    "dev:frontend": "npm --prefix Frontend run dev",
+    "build": "npm --prefix Backend run build && npm --prefix Frontend run build",
+    "build:backend": "npm --prefix Backend run build",
+    "build:frontend": "npm --prefix Frontend run build",
+    "lint": "npm --prefix Backend run lint && npm --prefix Frontend run lint",
+    "lint:backend": "npm --prefix Backend run lint",
+    "lint:frontend": "npm --prefix Frontend run lint",
+    "type-check": "npm --prefix Backend run type-check && npm --prefix Frontend run type-check",
+    "test": "npm --prefix Backend run test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.5.3"
+  }
+}

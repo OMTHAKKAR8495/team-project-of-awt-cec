@@ -1,0 +1,45 @@
+# Render Infrastructure as Code (Blueprint Specification)
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # ---------------------------------------------------------------------------
+  # Backend Web Service (Node.js + Express API)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: college-project-backend
+    runtime: node
+    rootDir: Backend
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false # Provide your production MongoDB Atlas URI via the Render dashboard
+      - key: FRONTEND_URL
+        sync: false # Set to your deployed Frontend URL (e.g., https://college-project-frontend.onrender.com)
+
+  # ---------------------------------------------------------------------------
+  # Frontend Static Site (Vite + React SPA)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: college-project-frontend
+    runtime: static
+    rootDir: Frontend
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      # Single-Page Application (SPA) rewrite rule to handle React Router client navigation
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false # Set to your deployed Backend API URL (e.g., https://college-project-backend.onrender.com/api)
