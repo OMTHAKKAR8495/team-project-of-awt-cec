@@ -17,6 +17,10 @@ export interface PaginatedJobsResult {
   limit: number;
   totalPages: number;
 }
+/**
+ * Safely escapes special regular expression characters in user search queries.
+ */
+export const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export const createJob = async (jobData: Partial<IJob>): Promise<IJobDocument> => {
   const newJob = await Job.create(jobData);
@@ -38,8 +42,9 @@ export const getJobs = async (params: JobFilterParams): Promise<PaginatedJobsRes
     query.employmentType = params.employmentType;
   }
 
-  if (params.search) {
-    const searchRegex = new RegExp(params.search.trim(), 'i');
+  if (params.search && params.search.trim()) {
+    const escapedSearch = escapeRegex(params.search.trim());
+    const searchRegex = new RegExp(escapedSearch, 'i');
     query.$or = [
       { title: searchRegex },
       { company: searchRegex },

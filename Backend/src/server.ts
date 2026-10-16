@@ -1,12 +1,7 @@
-import dotenv from 'dotenv';
-import path from 'path';
+import './config/env';
 import http from 'http';
 import app from './app';
 import { connectDatabase, disconnectDatabase } from './config/database';
-
-// Load environment variables (supports running from repo root or Backend subfolder)
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-dotenv.config(); // fallback to current working directory
 
 interface ServerConfig {
   port: number;

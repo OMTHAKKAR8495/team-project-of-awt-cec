@@ -222,18 +222,30 @@ export const extractResumeText = async (
         throw new AppError('Invalid PDF file header. The file may be corrupt.', 400);
       }
 
-      // PDFParse v2 class handling
-      if (pdfModule.PDFParse) {
-        const parser = new pdfModule.PDFParse({ data: buffer });
-        text = await parser.getText();
-        if (typeof parser.destroy === 'function') {
-          await parser.destroy();
+      // PDFParse v2 class handling with guaranteed resource release in finally block
+      let parser: {
+        getText: () => Promise<{ text?: string } | string>;
+        destroy?: () => Promise<void>;
+      } | null = null;
+      try {
+        if (pdfModule.PDFParse) {
+          parser = new pdfModule.PDFParse({ data: buffer });
+          const textResult = await parser!.getText();
+          text = typeof textResult === 'string' ? textResult : (textResult?.text ?? '');
+        } else if (typeof pdfModule === 'function') {
+          const result = await pdfModule(buffer);
+          text = typeof result === 'string' ? result : (result?.text ?? '');
+        } else {
+          throw new AppError('PDF extraction library failed to initialize.', 500);
         }
-      } else if (typeof pdfModule === 'function') {
-        const result = await pdfModule(buffer);
-        text = result.text || '';
-      } else {
-        throw new AppError('PDF extraction library failed to initialize.', 500);
+      } finally {
+        if (parser && typeof parser.destroy === 'function') {
+          try {
+            await parser.destroy();
+          } catch {
+            // Parser cleanup failure ignored
+          }
+        }
       }
     } else if (
       ext === '.docx' ||

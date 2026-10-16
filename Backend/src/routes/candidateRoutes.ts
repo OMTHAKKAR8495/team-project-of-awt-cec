@@ -46,6 +46,14 @@ router.post(
   candidateController.applyCandidateHandler
 );
 
+/**
+ * SECURITY NOTICE:
+ * Recruiter candidate review and status management endpoints below
+ * (GET /, GET /:id, GET /job/:jobId, PATCH /:id/status, PATCH /:id/notes) are unauthenticated
+ * for local development and academic demonstration. They are strictly UNSUITABLE for public
+ * production deployment without implementing authentication and role-based access control.
+ */
+
 // GET /api/candidates - List all candidates with pagination and filters
 router.get('/', validate(candidateQuerySchema, 'query'), candidateController.getCandidatesHandler);
 

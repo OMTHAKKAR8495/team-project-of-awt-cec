@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as candidateService from '../services/candidateService';
 import { AppError } from '../middleware/error.middleware';
+import { cleanupFile } from '../middleware/uploadMiddleware';
 
 export const applyCandidateHandler = async (
   req: Request,
@@ -27,6 +28,9 @@ export const applyCandidateHandler = async (
       data: candidate,
     });
   } catch (error) {
+    if (req.file?.path) {
+      await cleanupFile(req.file.path);
+    }
     next(error);
   }
 };

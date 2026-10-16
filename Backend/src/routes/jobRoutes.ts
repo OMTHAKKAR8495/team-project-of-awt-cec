@@ -36,6 +36,13 @@ router.get('/', validate(jobQuerySchema, 'query'), jobController.getJobsHandler)
 // GET /api/jobs/:id - Retrieve single job
 router.get('/:id', validate(idParamSchema, 'params'), jobController.getJobByIdHandler);
 
+/**
+ * SECURITY NOTICE:
+ * Recruiter-only modification endpoints below (POST /, PUT /:id, DELETE /:id) are unauthenticated
+ * for local development and college academic demonstration. They are strictly UNSUITABLE for
+ * public production deployment without integrating authentication/authorization (e.g. JWT/OAuth).
+ */
+
 // POST /api/jobs - Create new job posting
 router.post('/', validate(createJobSchema, 'body'), jobController.createJobHandler);
 

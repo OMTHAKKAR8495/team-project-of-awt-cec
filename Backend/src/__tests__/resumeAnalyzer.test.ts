@@ -152,6 +152,23 @@ describe('Resume Analyzer & ATS Scoring Engine', () => {
       expect(extracted).toContain('TypeScript');
     });
 
+    it('should extract text from a valid PDF resume fixture and identify skills', async () => {
+      const fixturePdf = path.join(__dirname, 'fixtures', 'sample-resume.pdf');
+      const extracted = await extractResumeText(fixturePdf, 'application/pdf');
+
+      expect(extracted).toContain('Senior Software Engineer');
+      expect(extracted).toContain('React');
+      expect(extracted).toContain('TypeScript');
+      expect(extracted).toContain('Node.js');
+      expect(extracted).toContain('MongoDB');
+
+      const skills = extractSkillsFromText(extracted);
+      expect(skills).toContain('React');
+      expect(skills).toContain('TypeScript');
+      expect(skills).toContain('Node.js');
+      expect(skills).toContain('MongoDB');
+    });
+
     it('should reject empty files with a descriptive error', async () => {
       await fs.promises.writeFile(tempTxtFile, '', 'utf-8');
 

@@ -1,6 +1,6 @@
 # AWT CEC College Group Project — Full-Stack MERN Architecture
 
-A production-ready Full-Stack MERN (MongoDB, Express, React, Node.js) foundational repository designed for a collaborative 5-student development team. Built with strict TypeScript, Vite, Tailwind CSS v4, unified npm workspaces, and pre-configured deployment blueprints for Render.
+A production-ready Full-Stack MERN (MongoDB, Express, React, Node.js) foundational repository designed for a collaborative 4-member development team. Built with strict TypeScript, Vite, Tailwind CSS v4, unified npm workspaces, and pre-configured deployment blueprints for Render.
 
 ---
 
@@ -353,13 +353,14 @@ The ATS scoring engine computes a transparent 0-100 score using an explicit cano
 
 ### 5. Recruiter Security & Production Considerations
 
-- **Recruiter Authentication Notice**: Candidate review and job creation endpoints are open for local development and college demonstration. Before deploying to production, integrate JWT or OAuth authentication middleware to restrict recruiter-only endpoints (`POST /api/jobs`, `DELETE /api/jobs/:id`, `PATCH /api/candidates/:id/status`).
+- **Recruiter Authentication Notice**: Recruiter-only endpoints (`POST /api/jobs`, `PUT /api/jobs/:id`, `DELETE /api/jobs/:id`, `GET /api/candidates`, `GET /api/candidates/:id`, `GET /api/candidates/job/:jobId`, `PATCH /api/candidates/:id/status`, `PATCH /api/candidates/:id/notes`) are currently unauthenticated for local academic development and project demonstration. These endpoints are **strictly unsuitable for public production deployment** without integrating an authentication and role-based access control layer (such as JWT or OAuth).
+- **Ephemeral Resume Retention Policy**: Uploaded resume files (`.pdf`, `.docx`, `.txt`) are processed ephemerally. The file is temporarily stored on server disk during text extraction and ATS skill matching, and is immediately deleted in a `finally` block on both successful processing and on all error paths (including request validation failures and parser errors). Candidate resume metadata (original filename, generated filename, size, MIME type, upload timestamp) and extracted skill analysis are retained in MongoDB. **Original resume binary documents cannot be downloaded after analysis.**
 
 ---
 
-## 👥 5-Member Team Collaboration & Git Workflow
+## 👥 4-Member Team Collaboration & Git Workflow
 
-To maintain code quality and prevent merge conflicts across five developers, adhere to the following workflow:
+To maintain code quality and prevent merge conflicts across four developers, adhere to the following workflow:
 
 ### 1. Feature Branch Rule
 

@@ -1,6 +1,7 @@
 import {
   createJobSchema,
   updateJobSchema,
+  jobQuerySchema,
   applyCandidateBodySchema,
   updateCandidateStatusSchema,
   objectIdSchema,
@@ -79,6 +80,21 @@ describe('Zod Validation Schemas', () => {
     it('should reject empty updateJob payloads', () => {
       expect(updateJobSchema.safeParse({}).success).toBe(false);
       expect(updateJobSchema.safeParse({ title: 'New Title' }).success).toBe(true);
+    });
+
+    it('should validate job search query parameters and enforce search max length', () => {
+      const validQuery = { search: 'React Developer', page: 1, limit: 10 };
+      expect(jobQuerySchema.safeParse(validQuery).success).toBe(true);
+
+      const tooLongSearch = { search: 'a'.repeat(101) };
+      const failed = jobQuerySchema.safeParse(tooLongSearch);
+      expect(failed.success).toBe(false);
+      if (!failed.success) {
+        expect(failed.error.issues[0].message).toContain('cannot exceed 100 characters');
+      }
+
+      const exactMaxLengthSearch = { search: 'a'.repeat(100) };
+      expect(jobQuerySchema.safeParse(exactMaxLengthSearch).success).toBe(true);
     });
   });
 

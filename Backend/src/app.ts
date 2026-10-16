@@ -1,3 +1,4 @@
+import './config/env';
 import express, { Application } from 'express';
 import cors from 'cors';
 import apiRouter from './routes';
@@ -11,10 +12,7 @@ import { generalApiLimiter } from './middleware/rateLimit';
 export const createApp = (): Application => {
   const app = express();
 
-  // Environment-based CORS configuration
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-  const allowedOrigins = [frontendUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'];
-
+  // Dynamic Environment-based CORS configuration
   app.use(
     cors({
       origin: (origin, callback) => {
@@ -22,9 +20,24 @@ export const createApp = (): Application => {
         if (!origin) {
           return callback(null, true);
         }
-        if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+
+        const isProduction = process.env.NODE_ENV === 'production';
+        if (!isProduction) {
+          // Preserve development behavior: allow local origins and active dev testing
           return callback(null, true);
         }
+
+        // In production, strictly restrict origins to configured FRONTEND_URL
+        const configuredFrontend = process.env.FRONTEND_URL || '';
+        const allowedOrigins = configuredFrontend
+          .split(',')
+          .map(url => url.trim())
+          .filter(Boolean);
+
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
         return callback(new Error(`Origin ${origin} not allowed by CORS policy`));
       },
       credentials: true,

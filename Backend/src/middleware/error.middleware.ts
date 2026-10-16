@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
+import { cleanupFile } from './uploadMiddleware';
 
 export class AppError extends Error {
   public readonly statusCode: number;
@@ -23,17 +24,44 @@ export interface CustomError extends Partial<Error> {
 
 /**
  * Centralized error-handling middleware.
- * Ensures consistent JSON error formatting and hides internal details in production.
+ * Ensures consistent JSON error formatting, cleans up temporary files, and hides internal details in production.
  */
 export const errorMiddleware = (
   err: CustomError,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction
 ): void => {
+  // Guarantee uploaded file cleanup on any error path
+  if (req.file?.path) {
+    cleanupFile(req.file.path);
+  }
+  if (Array.isArray(req.files)) {
+    req.files.forEach(f => cleanupFile(f.path));
+  } else if (req.files && typeof req.files === 'object') {
+    Object.values(req.files)
+      .flat()
+      .forEach(f => cleanupFile(f.path));
+  }
+
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal Server Error';
   let errors: Record<string, unknown>[] | undefined = err.errors;
+
+  // Handle Multer upload errors
+  if ((err as { name?: string }).name === 'MulterError') {
+    statusCode = 400;
+    if ((err as { code?: string }).code === 'LIMIT_FILE_SIZE') {
+      message = 'Uploaded file exceeds the maximum allowed size of 5 MB.';
+    } else {
+      message = err.message || 'File upload error occurred.';
+    }
+  }
+
+  // Handle CORS Forbidden Origin Error
+  if (err.message && err.message.includes('not allowed by CORS policy')) {
+    statusCode = 403;
+  }
 
   // Handle Mongoose Invalid ObjectId CastError
   if (err instanceof mongoose.Error.CastError) {
