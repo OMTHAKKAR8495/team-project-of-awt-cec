@@ -116,5 +116,90 @@ describe('Express API Endpoints & Middlewares', () => {
         await fs.promises.unlink(invalidPath);
       }
     });
+
+    it('should clean up uploaded temporary file when request body validation fails', async () => {
+      const uploadDir = path.resolve(__dirname, '../../uploads/resumes');
+      const filesBefore = fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : [];
+
+      const res = await request(app)
+        .post('/api/analyze-resume')
+        .attach('resume', sampleResumePath)
+        .field('jobTitle', 'Developer')
+        // missing requiredSkills will fail body validation
+        .field('requiredSkills', '');
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+
+      const filesAfter = fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : [];
+      expect(filesAfter.length).toBe(filesBefore.length);
+    });
+
+    it('should clean up uploaded temporary file when parser extraction fails', async () => {
+      const corruptFile = path.join(os.tmpdir(), `corrupt-${Date.now()}.pdf`);
+      // Invalid PDF content lacking %PDF- header
+      await fs.promises.writeFile(corruptFile, 'Not a real PDF file but has extension', 'utf-8');
+
+      const uploadDir = path.resolve(__dirname, '../../uploads/resumes');
+      const filesBefore = fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : [];
+
+      const res = await request(app)
+        .post('/api/analyze-resume')
+        .attach('resume', corruptFile)
+        .field('jobTitle', 'Engineer')
+        .field('requiredSkills', JSON.stringify(['React']));
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+
+      const filesAfter = fs.existsSync(uploadDir) ? fs.readdirSync(uploadDir) : [];
+      expect(filesAfter.length).toBe(filesBefore.length);
+
+      if (fs.existsSync(corruptFile)) {
+        await fs.promises.unlink(corruptFile);
+      }
+    });
+  });
+
+  describe('CORS Configuration & Environment Origin Restrictions', () => {
+    const originalEnv = process.env.NODE_ENV;
+    const originalFrontendUrl = process.env.FRONTEND_URL;
+
+    afterEach(() => {
+      process.env.NODE_ENV = originalEnv;
+      process.env.FRONTEND_URL = originalFrontendUrl;
+    });
+
+    it('should allow requests from local development origin in non-production mode', async () => {
+      process.env.NODE_ENV = 'development';
+      const res = await request(app).get('/api/health').set('Origin', 'http://localhost:5173');
+
+      expect(res.status).toBe(200);
+      expect(res.headers['access-control-allow-origin']).toBe('http://localhost:5173');
+    });
+
+    it('should restrict origins strictly to FRONTEND_URL in production mode', async () => {
+      process.env.NODE_ENV = 'production';
+      process.env.FRONTEND_URL = 'https://recruiter-portal.example.com';
+
+      // Configured origin allowed
+      const allowedRes = await request(app)
+        .get('/api/health')
+        .set('Origin', 'https://recruiter-portal.example.com');
+
+      expect(allowedRes.status).toBe(200);
+      expect(allowedRes.headers['access-control-allow-origin']).toBe(
+        'https://recruiter-portal.example.com'
+      );
+
+      // Unconfigured origin rejected with 403 Forbidden
+      const rejectedRes = await request(app)
+        .get('/api/health')
+        .set('Origin', 'https://unauthorized-domain.com');
+
+      expect(rejectedRes.status).toBe(403);
+      expect(rejectedRes.body.success).toBe(false);
+      expect(rejectedRes.body.message).toContain('not allowed by CORS policy');
+    });
   });
 });

@@ -95,7 +95,7 @@ export const updateJobSchema = z
 export const jobQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
-  search: z.string().trim().optional(),
+  search: z.string().trim().max(100, 'Search query cannot exceed 100 characters.').optional(),
   status: jobStatusEnum.optional(),
   employmentType: employmentTypeEnum.optional(),
 });

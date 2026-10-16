@@ -10,7 +10,7 @@
     "start": "node dist/server.js",
     "lint": "eslint src",
     "type-check": "tsc --noEmit",
-    "test": "jest --runInBand"
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand"
   },
   "dependencies": {
     "cors": "^2.8.5",

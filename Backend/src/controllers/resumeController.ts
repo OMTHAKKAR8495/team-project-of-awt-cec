@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as resumeService from '../services/resumeService';
 import { AppError } from '../middleware/error.middleware';
+import { cleanupFile } from '../middleware/uploadMiddleware';
 
 export const analyzeResumeHandler = async (
   req: Request,
@@ -31,6 +32,9 @@ export const analyzeResumeHandler = async (
       data: result,
     });
   } catch (error) {
+    if (req.file?.path) {
+      await cleanupFile(req.file.path);
+    }
     next(error);
   }
 };
