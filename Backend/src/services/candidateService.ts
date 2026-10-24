@@ -222,3 +222,54 @@ export const updateCandidateNotes = async (
 
   return candidate;
 };
+
+export interface UpdateCandidateDTO {
+  name?: string;
+  email?: string;
+  phone?: string;
+  notes?: string;
+  status?: ApplicationStatus;
+  applicationStatus?: ApplicationStatus;
+}
+
+/**
+ * Updates candidate application details (contact info, notes, or status)
+ */
+export const updateCandidate = async (
+  id: string,
+  updateData: UpdateCandidateDTO
+): Promise<ICandidateDocument> => {
+  const updates: Record<string, unknown> = {};
+  if (updateData.name !== undefined) updates.name = updateData.name;
+  if (updateData.email !== undefined) updates.email = updateData.email.toLowerCase();
+  if (updateData.phone !== undefined) updates.phone = updateData.phone;
+  if (updateData.notes !== undefined) updates.notes = updateData.notes;
+  const status = updateData.applicationStatus || updateData.status;
+  if (status !== undefined) updates.applicationStatus = status;
+
+  const candidate = await Candidate.findByIdAndUpdate(id, updates, {
+    new: true,
+    runValidators: true,
+  })
+    .populate('job', 'title company')
+    .exec();
+
+  if (!candidate) {
+    throw new AppError(`Candidate application with ID '${id}' was not found.`, 404);
+  }
+
+  return candidate;
+};
+
+/**
+ * Deletes a candidate application record by ID
+ */
+export const deleteCandidate = async (id: string): Promise<ICandidateDocument> => {
+  const candidate = await Candidate.findByIdAndDelete(id).exec();
+
+  if (!candidate) {
+    throw new AppError(`Candidate application with ID '${id}' was not found.`, 404);
+  }
+
+  return candidate;
+};

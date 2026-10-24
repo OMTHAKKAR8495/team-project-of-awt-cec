@@ -10,6 +10,7 @@ import {
   candidateQuerySchema,
   updateCandidateStatusSchema,
   updateCandidateNotesSchema,
+  updateCandidateSchema,
   objectIdSchema,
 } from '../utils/validationSchemas';
 
@@ -46,12 +47,21 @@ router.post(
   candidateController.applyCandidateHandler
 );
 
+// POST /api/candidates/upload - Alias for apply endpoint for reference compatibility
+router.post(
+  '/upload',
+  uploadAndAnalysisLimiter,
+  resumeUpload.single('resume'),
+  validate(applyCandidateBodySchema, 'body'),
+  candidateController.applyCandidateHandler
+);
+
 /**
  * SECURITY NOTICE:
- * Recruiter candidate review and status management endpoints below
- * (GET /, GET /:id, GET /job/:jobId, PATCH /:id/status, PATCH /:id/notes) are unauthenticated
- * for local development and academic demonstration. They are strictly UNSUITABLE for public
- * production deployment without implementing authentication and role-based access control.
+ * Recruiter candidate review, modification, and status management endpoints below
+ * (GET /, GET /:id, GET /job/:jobId, PATCH /:id, PATCH /:id/status, PATCH /:id/notes, DELETE /:id)
+ * are unauthenticated for local development and academic demonstration. They are strictly
+ * UNSUITABLE for public production deployment without implementing authentication and role-based access control.
  */
 
 // GET /api/candidates - List all candidates with pagination and filters
@@ -65,6 +75,14 @@ router.get(
   '/job/:jobId',
   validate(jobIdParamSchema, 'params'),
   candidateController.getCandidatesByJobHandler
+);
+
+// PATCH /api/candidates/:id - Update candidate profile/application details
+router.patch(
+  '/:id',
+  validate(idParamSchema, 'params'),
+  validate(updateCandidateSchema, 'body'),
+  candidateController.updateCandidateHandler
 );
 
 // PATCH /api/candidates/:id/status - Update application status (shortlisted, rejected, hired)
@@ -81,6 +99,13 @@ router.patch(
   validate(idParamSchema, 'params'),
   validate(updateCandidateNotesSchema, 'body'),
   candidateController.updateCandidateNotesHandler
+);
+
+// DELETE /api/candidates/:id - Delete candidate application
+router.delete(
+  '/:id',
+  validate(idParamSchema, 'params'),
+  candidateController.deleteCandidateHandler
 );
 
 export default router;

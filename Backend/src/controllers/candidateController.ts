@@ -132,3 +132,37 @@ export const updateCandidateNotesHandler = async (
     next(error);
   }
 };
+
+export const updateCandidateHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const updated = await candidateService.updateCandidate(req.params.id, req.body);
+    res.status(200).json({
+      success: true,
+      message: 'Candidate application details updated successfully.',
+      data: updated,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCandidateHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const deleted = await candidateService.deleteCandidate(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: 'Candidate application record deleted successfully.',
+      data: { id: deleted._id },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

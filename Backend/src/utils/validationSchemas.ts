@@ -127,6 +127,24 @@ export const updateCandidateNotesSchema = z.object({
   notes: z.string().trim().max(2000, 'Notes cannot exceed 2000 characters.'),
 });
 
+export const updateCandidateSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(2, 'Candidate name must be at least 2 characters long.')
+      .max(100, 'Name cannot exceed 100 characters.')
+      .optional(),
+    email: z.string().trim().toLowerCase().email('Please enter a valid email address.').optional(),
+    phone: z.string().trim().max(25, 'Phone number is too long.').optional(),
+    notes: z.string().trim().max(2000, 'Notes cannot exceed 2000 characters.').optional(),
+    status: applicationStatusEnum.optional(),
+    applicationStatus: applicationStatusEnum.optional(),
+  })
+  .refine(data => Object.keys(data).length > 0, {
+    message: 'At least one field must be provided to update candidate profile.',
+  });
+
 export const analyzeResumeBodySchema = z.object({
   jobId: objectIdSchema.optional(),
   jobTitle: z.string().trim().optional(),

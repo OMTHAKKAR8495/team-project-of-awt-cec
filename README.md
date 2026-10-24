@@ -69,6 +69,9 @@ college-group-project/
 │   ├── tsconfig.json               # Frontend root TypeScript references
 │   ├── tsconfig.node.json          # Vite configuration TypeScript settings
 │   └── vite.config.ts              # Vite bundler + Tailwind v4 plugin configuration
+├── docs/                           # Team documentation
+│   ├── API_CONTRACTS.md            # Authoritative API endpoints & request/response contracts
+│   └── DEVELOPER_HANDOFF.md        # Comprehensive developer handoff for Phases 3, 4 & 5
 ├── .editorconfig                   # Editor standards (spacing, line feeds)
 ├── .gitignore                      # Global git ignore configuration
 ├── .prettierrc.json                # Prettier code formatting rules
