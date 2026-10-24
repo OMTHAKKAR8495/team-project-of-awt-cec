@@ -4,6 +4,7 @@ import {
   jobQuerySchema,
   applyCandidateBodySchema,
   updateCandidateStatusSchema,
+  updateCandidateSchema,
   objectIdSchema,
   salaryRangeSchema,
 } from '../utils/validationSchemas';
@@ -136,6 +137,15 @@ describe('Zod Validation Schemas', () => {
 
       expect(updateCandidateStatusSchema.safeParse({ status: 'interviewing' }).success).toBe(false);
       expect(updateCandidateStatusSchema.safeParse({ status: 'unknown' }).success).toBe(false);
+    });
+
+    it('should validate candidate profile update payloads and reject empty updates', () => {
+      expect(updateCandidateSchema.safeParse({ name: 'Alex Johnson' }).success).toBe(true);
+      expect(updateCandidateSchema.safeParse({ status: 'shortlisted' }).success).toBe(true);
+      expect(updateCandidateSchema.safeParse({ email: 'alex@example.com', phone: '+1234567890' }).success).toBe(true);
+      expect(updateCandidateSchema.safeParse({}).success).toBe(false);
+      expect(updateCandidateSchema.safeParse({ email: 'not-an-email' }).success).toBe(false);
+      expect(updateCandidateSchema.safeParse({ status: 'invalid-status' }).success).toBe(false);
     });
   });
 });

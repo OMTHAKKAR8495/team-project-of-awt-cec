@@ -166,6 +166,28 @@ export const updateCandidateNotes = async (
   return response.data;
 };
 
+export const updateCandidate = async (
+  id: string,
+  updateData: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    notes?: string;
+    status?: ApplicationStatus;
+    applicationStatus?: ApplicationStatus;
+  }
+): Promise<SingleResponse<Candidate>> => {
+  const response = await api.patch<SingleResponse<Candidate>>(`/candidates/${id}`, updateData);
+  return response.data;
+};
+
+export const deleteCandidate = async (
+  id: string
+): Promise<SingleResponse<{ id: string }>> => {
+  const response = await api.delete<SingleResponse<{ id: string }>>(`/candidates/${id}`);
+  return response.data;
+};
+
 // ==========================================
 // RESUME ATS ANALYSIS SERVICE (/api/analyze-resume)
 // ==========================================

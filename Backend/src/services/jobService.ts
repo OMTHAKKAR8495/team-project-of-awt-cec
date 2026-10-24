@@ -1,5 +1,6 @@
 import { FilterQuery } from 'mongoose';
 import { Job, IJob, IJobDocument, JobStatus, EmploymentType } from '../models/Job';
+import { Candidate } from '../models/Candidate';
 import { AppError } from '../middleware/error.middleware';
 
 export interface JobFilterParams {
@@ -93,5 +94,7 @@ export const deleteJob = async (id: string): Promise<IJobDocument> => {
   if (!deletedJob) {
     throw new AppError(`Job with ID '${id}' was not found.`, 404);
   }
+  // Cascade delete candidate applications for this deleted job
+  await Candidate.deleteMany({ job: id }).exec();
   return deletedJob;
 };

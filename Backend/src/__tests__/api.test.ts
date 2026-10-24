@@ -45,6 +45,14 @@ describe('Express API Endpoints & Middlewares', () => {
       expect(res.body.success).toBe(false);
       expect(res.body.message).toContain('Database service is unavailable');
     });
+
+    it('DELETE /api/jobs/:id and DELETE /api/candidates/:id should return 503 if MongoDB is disconnected', async () => {
+      const jobRes = await request(app).delete('/api/jobs/507f1f77bcf86cd799439011');
+      expect(jobRes.status).toBe(503);
+
+      const candRes = await request(app).delete('/api/candidates/507f1f77bcf86cd799439011');
+      expect(candRes.status).toBe(503);
+    });
   });
 
   describe('POST /api/analyze-resume (Standalone Resume Analysis)', () => {
