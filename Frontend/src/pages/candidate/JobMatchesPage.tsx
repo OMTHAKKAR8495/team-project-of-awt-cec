@@ -162,6 +162,28 @@ export const JobMatchesPage: React.FC = () => {
           </Link>
         </div>
 
+        {/* Quick Skill Profile Presets */}
+        <div className="flex items-center gap-2 flex-wrap text-xs">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            Quick Presets:
+          </span>
+          {[
+            { label: 'Full-Stack Web', skills: ['React', 'TypeScript', 'Node.js', 'Tailwind CSS', 'MongoDB', 'Git'] },
+            { label: 'AI & Data Platforms', skills: ['Python', 'PyTorch', 'Docker', 'PostgreSQL', 'FastAPI', 'CUDA'] },
+            { label: 'Cloud Infrastructure', skills: ['Kubernetes', 'AWS', 'Docker', 'Linux', 'CI/CD', 'Terraform'] },
+            { label: 'FinTech & Quant', skills: ['Python', 'SQL', 'PostgreSQL', 'Stochastic Modeling', 'Tableau'] },
+          ].map(preset => (
+            <button
+              key={preset.label}
+              type="button"
+              onClick={() => setCandidateSkills(preset.skills)}
+              className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/5 text-[11px] font-medium transition-colors cursor-pointer"
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+
         {/* Selected skills pills */}
         <div className="flex flex-wrap gap-2">
           {candidateSkills.map(skill => (
