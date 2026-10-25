@@ -76,6 +76,23 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     };
   }, []);
 
+  // Global keyboard shortcuts (Ctrl+K to open search, Escape to close)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchModalOpen(prev => !prev);
+      }
+      if (e.key === 'Escape') {
+        setSearchModalOpen(false);
+        setRegionModalOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Quick search handler
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -227,11 +244,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <button
                 type="button"
                 onClick={() => setSearchModalOpen(true)}
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 flex items-center justify-center transition-colors cursor-pointer"
-                title="Search Positions & Intelligence"
-                aria-label="Search"
+                className="h-8 px-2 sm:px-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Search Positions & Intelligence (Ctrl+K / ⌘K)"
+                aria-label="Search Positions (Ctrl+K)"
               >
                 <Search className="w-4 h-4" />
+                <span className="hidden sm:inline-block text-[10px] text-slate-400 font-mono bg-white/10 px-1 py-0.2 rounded">⌘K</span>
               </button>
 
               {/* Region Selector */}
