@@ -12,6 +12,8 @@ import {
   ChevronRight,
   Briefcase,
   Lightbulb,
+  Copy,
+  Check,
 } from 'lucide-react';
 
 interface Question {
@@ -33,6 +35,13 @@ export const InterviewStudioPage: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+
+  const handleCopyBenchmark = (id: number, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const interviewTracks = [
     {
@@ -402,9 +411,28 @@ export const InterviewStudioPage: React.FC = () => {
                   </span>
                 </div>
                 <p className="text-xs font-semibold text-white">{q.question}</p>
-                <div className="text-xs text-slate-300 pt-1 leading-relaxed bg-[#060814]/70 p-3 rounded-xl border border-white/5">
-                  <strong className="text-cyan-400 block mb-0.5">Nexus Model Solution Benchmark:</strong>
-                  {q.sampleModelAnswer}
+                <div className="text-xs text-slate-300 pt-1 leading-relaxed bg-[#060814]/70 p-3 rounded-xl border border-white/5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <strong className="text-cyan-400 block">Nexus Model Solution Benchmark:</strong>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyBenchmark(q.id, q.sampleModelAnswer)}
+                      className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedId === q.id ? (
+                        <>
+                          <Check className="w-3 h-3 text-emerald-400" />
+                          <span className="text-emerald-400">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3 h-3 text-slate-400" />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p>{q.sampleModelAnswer}</p>
                 </div>
               </div>
             ))}
