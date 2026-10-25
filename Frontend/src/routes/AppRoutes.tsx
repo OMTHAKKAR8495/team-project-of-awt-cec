@@ -2,11 +2,19 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from '../layouts/AppLayout';
 
+// Enterprise Global Pages
+import HomePage from '../pages/HomePage';
+import AboutUsPage from '../pages/AboutUsPage';
+import ServicesPage from '../pages/ServicesPage';
+import ContactPage from '../pages/ContactPage';
+
 // Candidate Module Pages
 import JobDiscoveryPage from '../pages/candidate/JobDiscoveryPage';
 import JobDetailsPage from '../pages/candidate/JobDetailsPage';
 import ResumeAnalyzerPage from '../pages/candidate/ResumeAnalyzerPage';
 import CandidateApplicationsPage from '../pages/candidate/CandidateApplicationsPage';
+import JobMatchesPage from '../pages/candidate/JobMatchesPage';
+import InterviewStudioPage from '../pages/candidate/InterviewStudioPage';
 
 // Recruiter Module Pages
 import RecruiterDashboardPage from '../pages/recruiter/RecruiterDashboardPage';
@@ -23,14 +31,24 @@ export const AppRoutes: React.FC = () => {
     <BrowserRouter>
       <AppLayout>
         <Routes>
-          {/* Default Route redirects to Job Discovery */}
-          <Route path="/" element={<Navigate to="/jobs" replace />} />
+          {/* Main Enterprise Landing Page (Reference Screenshots 1, 2, 3) */}
+          <Route path="/" element={<HomePage />} />
+
+          {/* Institutional Information Pages */}
+          <Route path="/about" element={<AboutUsPage />} />
+          <Route path="/divisions" element={<ServicesPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/contact" element={<ContactPage />} />
 
           {/* Candidate Experience Routes */}
+          <Route path="/careers" element={<JobDiscoveryPage />} />
           <Route path="/jobs" element={<JobDiscoveryPage />} />
           <Route path="/jobs/:id" element={<JobDetailsPage />} />
           <Route path="/analyze-resume" element={<ResumeAnalyzerPage />} />
+          <Route path="/job-matches" element={<JobMatchesPage />} />
+          <Route path="/interview-studio" element={<InterviewStudioPage />} />
           <Route path="/applications" element={<CandidateApplicationsPage />} />
+          <Route path="/database" element={<AllCandidatesPage />} />
 
           {/* Recruiter Experience Routes */}
           <Route
