@@ -32,6 +32,7 @@ export const ContactPage: React.FC = () => {
       address: 'One Nexus Plaza, Manhattan, NY 10001',
       phone: '+1 (212) 555-0190',
       email: 'hq.ny@nexusdynamics.global',
+      timeZone: 'America/New_York',
     },
     {
       city: 'London, United Kingdom',
@@ -39,6 +40,7 @@ export const ContactPage: React.FC = () => {
       address: '30 St Mary Axe, City of London, EC3A 8EP',
       phone: '+44 20 7946 0912',
       email: 'emea.london@nexusdynamics.global',
+      timeZone: 'Europe/London',
     },
     {
       city: 'Singapore, Singapore',
@@ -46,6 +48,7 @@ export const ContactPage: React.FC = () => {
       address: 'Marina Bay Financial Centre Tower 2, Singapore 018983',
       phone: '+65 6789 0100',
       email: 'apac.singapore@nexusdynamics.global',
+      timeZone: 'Asia/Singapore',
     },
     {
       city: 'Zurich, Switzerland',
@@ -53,6 +56,7 @@ export const ContactPage: React.FC = () => {
       address: 'Technoparkstrasse 1, 8005 Zürich',
       phone: '+41 44 234 5678',
       email: 'rd.zurich@nexusdynamics.global',
+      timeZone: 'Europe/Zurich',
     },
     {
       city: 'Bengaluru, India',
@@ -60,6 +64,7 @@ export const ContactPage: React.FC = () => {
       address: 'Outer Ring Road, Manyata Tech Park, Bengaluru 560045',
       phone: '+91 80 4000 1234',
       email: 'innovation.bengaluru@nexusdynamics.global',
+      timeZone: 'Asia/Kolkata',
     },
     {
       city: 'Tokyo, Japan',
@@ -67,8 +72,23 @@ export const ContactPage: React.FC = () => {
       address: 'Roppongi Hills Mori Tower, Minato-ku, Tokyo 106-6108',
       phone: '+81 3 5555 0143',
       email: 'tech.tokyo@nexusdynamics.global',
+      timeZone: 'Asia/Tokyo',
     },
   ];
+
+  const getLocalHubTime = (tz: string) => {
+    try {
+      return new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: tz,
+        timeZoneName: 'short',
+      }).format(new Date());
+    } catch {
+      return 'Operational';
+    }
+  };
 
   const validate = () => {
     const errs: { [key: string]: string } = {};
@@ -331,7 +351,13 @@ export const ContactPage: React.FC = () => {
                 <span>{hub.address}</span>
               </div>
               <div className="pt-2 border-t border-white/5 space-y-1 text-xs">
-                <div className="text-cyan-400 font-medium">{hub.phone}</div>
+                <div className="flex items-center justify-between">
+                  <div className="text-cyan-400 font-medium">{hub.phone}</div>
+                  <div className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-cyan-400" />
+                    <span>{getLocalHubTime(hub.timeZone)}</span>
+                  </div>
+                </div>
                 <div className="text-slate-400">{hub.email}</div>
               </div>
             </div>
