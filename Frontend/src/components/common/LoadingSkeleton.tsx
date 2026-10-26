@@ -4,6 +4,24 @@ export const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) =
   <div className={`animate-pulse bg-slate-200/80 rounded-md ${className}`} />
 );
 
+export const AvatarSkeleton: React.FC<{
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+}> = ({ size = 'md', className = '' }) => {
+  const sizeMap = {
+    xs: 'w-6 h-6',
+    sm: 'w-8 h-8',
+    md: 'w-10 h-10',
+    lg: 'w-12 h-12',
+    xl: 'w-16 h-16',
+  };
+  return <Skeleton className={`rounded-full shrink-0 ${sizeMap[size]} ${className}`} />;
+};
+
+export const BadgeSkeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <Skeleton className={`h-5 w-16 rounded-full ${className}`} />
+);
+
 export const JobCardSkeleton: React.FC = () => (
   <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-4">
     <div className="flex justify-between items-start">
@@ -48,3 +66,4 @@ export const StatCardSkeleton: React.FC = () => (
 );
 
 export default Skeleton;
+
