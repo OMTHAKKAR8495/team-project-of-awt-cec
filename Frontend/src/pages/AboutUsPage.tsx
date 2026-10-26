@@ -217,7 +217,33 @@ export const AboutUsPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. CAREER CTA */}
+      {/* 5. HISTORICAL TRANSFORMATION TIMELINE */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="text-center space-y-2">
+          <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">DECADE OF EXCELLENCE</div>
+          <h2 className="text-3xl font-extrabold text-white">Milestones in Global Scaling</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {[
+            { year: '2012', title: 'Inception', desc: 'Founded in New York; launched core sovereign cloud architecture.' },
+            { year: '2016', title: 'EMEA & APAC', desc: 'Established London and Singapore regional decision headquarters.' },
+            { year: '2020', title: 'AI Acceleration', desc: 'Established $2.5B dedicated enterprise machine intelligence fund.' },
+            { year: '2024', title: 'ESG Roadmap', desc: 'Achieved 80% renewable microgrid energy 4 years ahead of schedule.' },
+            { year: '2026', title: 'Atlas 4.0', desc: 'Unified industrial telemetry platform across 65+ partner nations.' },
+          ].map(m => (
+            <div key={m.year} className="nexus-glass-card rounded-2xl p-5 border border-white/10 space-y-2 relative group hover:border-cyan-400/50 transition-all">
+              <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
+                {m.year}
+              </span>
+              <h4 className="font-bold text-white text-sm">{m.title}</h4>
+              <p className="text-xs text-slate-400 leading-relaxed">{m.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 6. CAREER CTA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="nexus-glass-card rounded-3xl p-8 sm:p-12 border border-indigo-500/30 bg-gradient-to-r from-purple-950/40 via-indigo-950/50 to-[#070b20] flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center md:text-left">
