@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import { X } from 'lucide-react';
 
 export interface ModalProps {
@@ -9,6 +9,7 @@ export interface ModalProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  closeOnBackdropClick?: boolean;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -19,8 +20,11 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   footer,
   size = 'md',
+  closeOnBackdropClick = true,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  const descId = useId();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -55,9 +59,13 @@ export const Modal: React.FC<ModalProps> = ({
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby={title ? titleId : undefined}
+      aria-describedby={description ? descId : undefined}
       className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-150"
       onClick={e => {
-        if (e.target === e.currentTarget) onClose();
+        if (closeOnBackdropClick && e.target === e.currentTarget) {
+          onClose();
+        }
       }}
     >
       <div
@@ -68,12 +76,17 @@ export const Modal: React.FC<ModalProps> = ({
         <div className="px-6 py-4.5 border-b border-slate-100 flex items-start justify-between gap-4 bg-slate-50/50">
           <div>
             {title && (
-              <h2 className="text-lg font-semibold text-slate-900 tracking-tight">
+              <h2
+                id={titleId}
+                className="text-lg font-semibold text-slate-900 tracking-tight"
+              >
                 {title}
               </h2>
             )}
             {description && (
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">{description}</p>
+              <p id={descId} className="text-xs sm:text-sm text-slate-500 mt-1">
+                {description}
+              </p>
             )}
           </div>
           <button
@@ -100,3 +113,4 @@ export const Modal: React.FC<ModalProps> = ({
 };
 
 export default Modal;
+
