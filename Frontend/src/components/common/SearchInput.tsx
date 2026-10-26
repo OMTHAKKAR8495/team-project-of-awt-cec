@@ -2,7 +2,8 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
 
 export interface SearchInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
+
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;

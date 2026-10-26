@@ -54,9 +54,10 @@ export const Tooltip: React.FC<TooltipProps> = ({
       onFocus={showTooltip}
       onBlur={hideTooltip}
     >
-      {React.cloneElement(children, {
+      {React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
         'aria-describedby': isVisible ? tooltipId : undefined,
       })}
+
 
       {isVisible && (
         <div
