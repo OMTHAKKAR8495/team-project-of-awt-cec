@@ -88,13 +88,13 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
   const activeError = error || localError;
 
   return (
-    <div className="w-full space-y-1.5">
+    <div className="w-full space-y-2">
       {label && (
         <div className="flex items-center justify-between">
-          <label className="block text-xs font-semibold text-slate-700 tracking-tight">
-            {label} <span className="text-rose-500">*</span>
+          <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+            {label} <span className="text-rose-400">*</span>
           </label>
-          <span className="text-[11px] text-slate-400">PDF, DOCX, TXT up to 5MB</span>
+          <span className="text-[11px] text-slate-500">PDF, DOCX, TXT up to 5MB</span>
         </div>
       )}
 
@@ -113,43 +113,44 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => !disabled && fileInputRef.current?.click()}
-          className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-150 flex flex-col items-center justify-center gap-2 ${
-            disabled ? 'opacity-60 cursor-not-allowed bg-slate-50' : 'bg-slate-50/60 hover:bg-slate-50'
+          className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center gap-3 backdrop-blur-sm ${
+            disabled ? 'opacity-60 cursor-not-allowed bg-white/3' : 'bg-white/3 hover:bg-white/5'
           } ${
             isDragOver
-              ? 'border-indigo-500 bg-indigo-50/50'
+              ? 'border-cyan-500 bg-cyan-950/20'
               : activeError
-                ? 'border-rose-300 hover:border-rose-400'
-                : 'border-slate-300 hover:border-indigo-400'
+                ? 'border-rose-500/50 hover:border-rose-400'
+                : 'border-white/15 hover:border-cyan-500/50'
           }`}
         >
-          <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
-            <UploadCloud className="w-5 h-5" />
+          <div className="w-12 h-12 rounded-2xl bg-indigo-950/60 border border-indigo-500/30 text-cyan-400 flex items-center justify-center">
+            <UploadCloud className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm font-medium text-slate-800">
-              <span className="text-indigo-600 font-semibold hover:underline">Click to upload</span> or drag and drop
+            <p className="text-sm font-medium text-slate-200">
+              <span className="text-cyan-400 font-semibold hover:underline">Click to upload</span>{' '}
+              <span className="text-slate-400">or drag and drop</span>
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 mt-1">
               Maximum file size: 5 MB (.pdf, .docx, .txt)
             </p>
           </div>
         </div>
       ) : (
-        <div className="p-3.5 bg-indigo-50/40 border border-indigo-200/80 rounded-xl flex items-center justify-between gap-3">
+        <div className="p-4 bg-indigo-950/40 border border-indigo-500/30 rounded-2xl flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-indigo-600/20">
               <FileText className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-slate-900 truncate">
+              <p className="text-sm font-semibold text-white truncate">
                 {selectedFile.name}
               </p>
-              <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+              <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
                 <span>{formatFileSize(selectedFile.size)}</span>
-                <span>•</span>
-                <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                  <CheckCircle2 className="w-3 h-3" /> Ready for upload
+                <span className="text-slate-600">•</span>
+                <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                  <CheckCircle2 className="w-3 h-3" /> Ready for analysis
                 </span>
               </div>
             </div>
@@ -159,7 +160,7 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
             onClick={handleRemove}
             disabled={disabled}
             aria-label="Remove selected resume"
-            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+            className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-rose-500/30"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -167,7 +168,7 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
       )}
 
       {activeError && (
-        <div className="flex items-center gap-1.5 text-xs text-rose-600 font-medium">
+        <div className="flex items-center gap-1.5 text-xs text-rose-400 font-medium">
           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
           <span>{activeError}</span>
         </div>
