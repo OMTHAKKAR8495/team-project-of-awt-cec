@@ -5,6 +5,7 @@ export interface CardProps {
   className?: string;
   onClick?: () => void;
   hoverable?: boolean;
+  variant?: 'default' | 'glass' | 'outline' | 'flat';
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -12,13 +13,27 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   onClick,
   hoverable = false,
+  variant = 'default',
 }) => {
+  const variantStyles = {
+    default: 'bg-white border border-slate-200/90 shadow-xs text-slate-900',
+    glass: 'nexus-glass-card text-slate-100',
+    outline: 'bg-transparent border border-slate-200/90 text-slate-900',
+    flat: 'bg-slate-50 border border-transparent text-slate-900',
+  };
+
+  const hoverStyle = hoverable
+    ? variant === 'glass'
+      ? 'hover:border-indigo-500/40 hover:shadow-lg transition-all duration-200'
+      : 'hover:border-slate-300 hover:shadow-md transition-all duration-200'
+    : '';
+
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-xl border border-slate-200/90 shadow-xs ${
-        hoverable ? 'hover:border-slate-300 hover:shadow-md transition-all duration-200' : ''
-      } ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`rounded-xl ${variantStyles[variant]} ${hoverStyle} ${
+        onClick ? 'cursor-pointer' : ''
+      } ${className}`}
     >
       {children}
     </div>
@@ -34,7 +49,7 @@ export const CardHeader: React.FC<{
 }> = ({ title, subtitle, action, className = '', children }) => {
   if (children) {
     return (
-      <div className={`p-5 sm:p-6 border-b border-slate-100 ${className}`}>
+      <div className={`p-5 sm:p-6 border-b border-slate-100/80 ${className}`}>
         {children}
       </div>
     );
@@ -42,11 +57,11 @@ export const CardHeader: React.FC<{
 
   return (
     <div
-      className={`p-5 sm:p-6 border-b border-slate-100 flex items-start justify-between gap-4 ${className}`}
+      className={`p-5 sm:p-6 border-b border-slate-100/80 flex items-start justify-between gap-4 ${className}`}
     >
       <div>
         {title && (
-          <h2 className="text-base sm:text-lg font-semibold text-slate-900 tracking-tight">
+          <h2 className="text-base sm:text-lg font-semibold tracking-tight">
             {title}
           </h2>
         )}
@@ -72,7 +87,7 @@ export const CardFooter: React.FC<{
 }> = ({ children, className = '' }) => {
   return (
     <div
-      className={`p-4 sm:px-6 bg-slate-50/70 border-t border-slate-100 rounded-b-xl flex items-center justify-between gap-3 ${className}`}
+      className={`p-4 sm:px-6 bg-slate-50/70 border-t border-slate-100/80 rounded-b-xl flex items-center justify-between gap-3 ${className}`}
     >
       {children}
     </div>
@@ -80,3 +95,4 @@ export const CardFooter: React.FC<{
 };
 
 export default Card;
+
