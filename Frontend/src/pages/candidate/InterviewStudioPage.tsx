@@ -162,6 +162,14 @@ export const InterviewStudioPage: React.FC = () => {
         <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
           Simulate enterprise technical interviews designed by Nexus Dynamics hiring committees. Receive instant evaluation against model answer benchmarks and communication criteria.
         </p>
+
+        {/* Realistic Simulation Disclosure */}
+        <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/20 text-xs text-slate-300 flex items-start gap-2.5 max-w-3xl">
+          <Lightbulb className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+          <p className="text-[11px] text-slate-300 leading-relaxed">
+            <strong className="text-cyan-300">Technical Simulator Notice:</strong> Questions and scoring rubrics are curated standard engineering interview tracks. Voice dictation is simulated locally and no audio telemetry is transmitted to third-party AI endpoints.
+          </p>
+        </div>
       </div>
 
       {/* ========================================================== */}
