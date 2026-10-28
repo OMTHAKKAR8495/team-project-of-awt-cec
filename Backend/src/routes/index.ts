@@ -3,8 +3,12 @@ import healthRoutes from './health.routes';
 import jobRoutes from './jobRoutes';
 import candidateRoutes from './candidateRoutes';
 import resumeRoutes from './resumeRoutes';
+import authRoutes from './authRoutes';
 
 const router = Router();
+
+// Authentication endpoints (/api/auth)
+router.use('/auth', authRoutes);
 
 // System health check endpoint (/api/health)
 router.use('/health', healthRoutes);

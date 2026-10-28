@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, Model } from 'mongoose';
+import mongoose, { Document, Schema, Model, Types } from 'mongoose';
 
 export type EmploymentType = 'full-time' | 'part-time' | 'contract' | 'internship' | 'remote';
 export type JobStatus = 'open' | 'closed';
@@ -21,6 +21,7 @@ export interface IJob {
   responsibilities?: string[];
   salaryRange?: ISalaryRange;
   status: JobStatus;
+  createdBy?: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -107,6 +108,11 @@ const JobSchema = new Schema<IJobDocument>(
       },
       default: 'open',
       index: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
     },
   },
   {

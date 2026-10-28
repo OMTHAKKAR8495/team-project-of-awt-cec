@@ -1,6 +1,7 @@
 import './config/env';
 import express, { Application } from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import apiRouter from './routes';
 import { notFoundMiddleware } from './middleware/notFound.middleware';
 import { errorMiddleware } from './middleware/error.middleware';
@@ -49,6 +50,7 @@ export const createApp = (): Application => {
   // Body parsing middleware with size limits to prevent payload exhaustion
   app.use(express.json({ limit: '2mb' }));
   app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+  app.use(cookieParser());
 
   // Root welcome endpoint
   app.get('/', (_req, res) => {

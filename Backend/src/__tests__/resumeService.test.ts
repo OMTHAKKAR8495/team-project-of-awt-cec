@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { analyzeUploadedResume } from '../src/services/resumeService';
-import { AppError } from '../src/middleware/error.middleware';
+import { analyzeUploadedResume } from '../services/resumeService';
+import { AppError } from '../middleware/error.middleware';
 
 describe('Resume Service Unit Tests', () => {
   let testFilePath: string;

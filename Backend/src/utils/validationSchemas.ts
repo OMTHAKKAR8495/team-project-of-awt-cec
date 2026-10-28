@@ -145,6 +145,22 @@ export const updateCandidateSchema = z
     message: 'At least one field must be provided to update candidate profile.',
   });
 
+// ─── Auth Schemas ─────────────────────────────────────────────────────────────
+
+export const registerSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  email: z.string().trim().toLowerCase().email(),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(72),
+  role: z.enum(['recruiter', 'candidate']).default('candidate'),
+});
+
+export const loginSchema = z.object({
+  email: z.string().trim().toLowerCase().email(),
+  password: z.string().min(1, 'Password is required'),
+});
+
+// ─── Resume Analysis Schema ───────────────────────────────────────────────────
+
 export const analyzeResumeBodySchema = z.object({
   jobId: objectIdSchema.optional(),
   jobTitle: z.string().trim().optional(),

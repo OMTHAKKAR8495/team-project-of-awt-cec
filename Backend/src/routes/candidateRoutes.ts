@@ -5,6 +5,7 @@ import * as candidateController from '../controllers/candidateController';
 import { resumeUpload } from '../middleware/uploadMiddleware';
 import { validate } from '../middleware/validateRequest';
 import { uploadAndAnalysisLimiter } from '../middleware/rateLimit';
+import { authenticateToken, requireRole } from '../middleware/auth.middleware';
 import {
   applyCandidateBodySchema,
   candidateQuerySchema,
@@ -64,46 +65,68 @@ router.post(
  * UNSUITABLE for public production deployment without implementing authentication and role-based access control.
  */
 
-// GET /api/candidates - List all candidates with pagination and filters
-router.get('/', validate(candidateQuerySchema, 'query'), candidateController.getCandidatesHandler);
+// GET /api/candidates - List all candidates with pagination and filters (Recruiter only)
+router.get(
+  '/',
+  authenticateToken,
+  requireRole('recruiter'),
+  validate(candidateQuerySchema, 'query'),
+  candidateController.getCandidatesHandler
+);
 
-// GET /api/candidates/:id - Get single candidate details
-router.get('/:id', validate(idParamSchema, 'params'), candidateController.getCandidateByIdHandler);
+// GET /api/candidates/:id - Get single candidate details (Recruiter only)
+router.get(
+  '/:id',
+  authenticateToken,
+  requireRole('recruiter'),
+  validate(idParamSchema, 'params'),
+  candidateController.getCandidateByIdHandler
+);
 
-// GET /api/candidates/job/:jobId - Get candidates for a specific job ranked by ATS score
+// GET /api/candidates/job/:jobId - Get candidates for a specific job ranked by ATS score (Recruiter only)
 router.get(
   '/job/:jobId',
+  authenticateToken,
+  requireRole('recruiter'),
   validate(jobIdParamSchema, 'params'),
   candidateController.getCandidatesByJobHandler
 );
 
-// PATCH /api/candidates/:id - Update candidate profile/application details
+// PATCH /api/candidates/:id - Update candidate profile/application details (Recruiter only)
 router.patch(
   '/:id',
+  authenticateToken,
+  requireRole('recruiter'),
   validate(idParamSchema, 'params'),
   validate(updateCandidateSchema, 'body'),
   candidateController.updateCandidateHandler
 );
 
-// PATCH /api/candidates/:id/status - Update application status (shortlisted, rejected, hired)
+// PATCH /api/candidates/:id/status - Update application status (shortlisted, rejected, hired) (Recruiter only)
 router.patch(
   '/:id/status',
+  authenticateToken,
+  requireRole('recruiter'),
   validate(idParamSchema, 'params'),
   validate(updateCandidateStatusSchema, 'body'),
   candidateController.updateCandidateStatusHandler
 );
 
-// PATCH /api/candidates/:id/notes - Update recruiter notes
+// PATCH /api/candidates/:id/notes - Update recruiter notes (Recruiter only)
 router.patch(
   '/:id/notes',
+  authenticateToken,
+  requireRole('recruiter'),
   validate(idParamSchema, 'params'),
   validate(updateCandidateNotesSchema, 'body'),
   candidateController.updateCandidateNotesHandler
 );
 
-// DELETE /api/candidates/:id - Delete candidate application
+// DELETE /api/candidates/:id - Delete candidate application (Recruiter only)
 router.delete(
   '/:id',
+  authenticateToken,
+  requireRole('recruiter'),
   validate(idParamSchema, 'params'),
   candidateController.deleteCandidateHandler
 );

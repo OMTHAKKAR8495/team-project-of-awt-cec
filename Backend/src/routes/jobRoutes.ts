@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { z } from 'zod';
 import * as jobController from '../controllers/jobController';
 import { validate } from '../middleware/validateRequest';
+import { authenticateToken, requireRole } from '../middleware/auth.middleware';
 import {
   createJobSchema,
   updateJobSchema,
@@ -43,18 +44,32 @@ router.get('/:id', validate(idParamSchema, 'params'), jobController.getJobByIdHa
  * public production deployment without integrating authentication/authorization (e.g. JWT/OAuth).
  */
 
-// POST /api/jobs - Create new job posting
-router.post('/', validate(createJobSchema, 'body'), jobController.createJobHandler);
+// POST /api/jobs - Create new job posting (Recruiter only)
+router.post(
+  '/',
+  authenticateToken,
+  requireRole('recruiter'),
+  validate(createJobSchema, 'body'),
+  jobController.createJobHandler
+);
 
-// PUT /api/jobs/:id - Update existing job
+// PUT /api/jobs/:id - Update existing job (Recruiter only)
 router.put(
   '/:id',
+  authenticateToken,
+  requireRole('recruiter'),
   validate(idParamSchema, 'params'),
   validate(updateJobSchema, 'body'),
   jobController.updateJobHandler
 );
 
-// DELETE /api/jobs/:id - Delete job
-router.delete('/:id', validate(idParamSchema, 'params'), jobController.deleteJobHandler);
+// DELETE /api/jobs/:id - Delete job (Recruiter only)
+router.delete(
+  '/:id',
+  authenticateToken,
+  requireRole('recruiter'),
+  validate(idParamSchema, 'params'),
+  jobController.deleteJobHandler
+);
 
 export default router;
