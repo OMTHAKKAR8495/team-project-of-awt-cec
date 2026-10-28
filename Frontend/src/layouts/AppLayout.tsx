@@ -18,6 +18,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { fetchHealthStatus, HealthCheckResponse, getJobs } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { Job } from '../types/job';
 
 interface NavItem {
@@ -47,6 +48,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
   // Detect whether current route is in the Recruiter space
   const isRecruiterPath = location.pathname.startsWith('/recruiter');
@@ -264,6 +266,32 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
                 <span>Analyze CV</span>
               </Link>
+
+              {/* Authentication Controls */}
+              {isAuthenticated ? (
+                <div className="flex items-center gap-2">
+                  <span className="hidden md:inline text-xs font-medium text-slate-300">
+                    {user?.name}
+                    <span className="ml-1 text-[10px] text-cyan-400 font-mono">
+                      ({user?.role})
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => logout()}
+                    className="text-xs px-2.5 py-1 rounded-lg border border-white/10 hover:bg-white/10 text-slate-300 transition-colors cursor-pointer"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+                >
+                  Sign In
+                </Link>
+              )}
 
               {/* Mode Switcher */}
               <button

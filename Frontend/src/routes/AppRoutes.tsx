@@ -1,12 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from '../layouts/AppLayout';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
 
 // Enterprise Global Pages
 import HomePage from '../pages/HomePage';
 import AboutUsPage from '../pages/AboutUsPage';
 import ServicesPage from '../pages/ServicesPage';
 import ContactPage from '../pages/ContactPage';
+import LoginPage from '../pages/LoginPage';
 
 // Candidate Module Pages
 import JobDiscoveryPage from '../pages/candidate/JobDiscoveryPage';
@@ -34,6 +36,9 @@ export const AppRoutes: React.FC = () => {
           {/* Main Enterprise Landing Page (Reference Screenshots 1, 2, 3) */}
           <Route path="/" element={<HomePage />} />
 
+          {/* Authentication Gateway */}
+          <Route path="/login" element={<LoginPage />} />
+
           {/* Institutional Information Pages */}
           <Route path="/about" element={<AboutUsPage />} />
           <Route path="/divisions" element={<ServicesPage />} />
@@ -48,22 +53,68 @@ export const AppRoutes: React.FC = () => {
           <Route path="/job-matches" element={<JobMatchesPage />} />
           <Route path="/interview-studio" element={<InterviewStudioPage />} />
           <Route path="/applications" element={<CandidateApplicationsPage />} />
-          <Route path="/database" element={<AllCandidatesPage />} />
+          <Route
+            path="/database"
+            element={
+              <ProtectedRoute allowedRoles={['recruiter']}>
+                <AllCandidatesPage />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* Recruiter Experience Routes */}
+          {/* Recruiter Experience Routes — Protected with Role Authorization */}
           <Route
             path="/recruiter"
             element={<Navigate to="/recruiter/dashboard" replace />}
           />
-          <Route path="/recruiter/dashboard" element={<RecruiterDashboardPage />} />
-          <Route path="/recruiter/jobs" element={<ManageJobsPage />} />
-          <Route path="/recruiter/jobs/new" element={<CreateEditJobPage />} />
-          <Route path="/recruiter/jobs/:id/edit" element={<CreateEditJobPage />} />
+          <Route
+            path="/recruiter/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['recruiter']}>
+                <RecruiterDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recruiter/jobs"
+            element={
+              <ProtectedRoute allowedRoles={['recruiter']}>
+                <ManageJobsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recruiter/jobs/new"
+            element={
+              <ProtectedRoute allowedRoles={['recruiter']}>
+                <CreateEditJobPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recruiter/jobs/:id/edit"
+            element={
+              <ProtectedRoute allowedRoles={['recruiter']}>
+                <CreateEditJobPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/recruiter/jobs/:id/applicants"
-            element={<JobApplicantsPage />}
+            element={
+              <ProtectedRoute allowedRoles={['recruiter']}>
+                <JobApplicantsPage />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/recruiter/candidates" element={<AllCandidatesPage />} />
+          <Route
+            path="/recruiter/candidates"
+            element={
+              <ProtectedRoute allowedRoles={['recruiter']}>
+                <AllCandidatesPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 404 Catch-All Route */}
           <Route path="*" element={<NotFoundPage />} />
