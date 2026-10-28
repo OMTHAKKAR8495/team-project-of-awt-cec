@@ -10,7 +10,8 @@
     "start": "node dist/server.js",
     "lint": "eslint src",
     "type-check": "tsc --noEmit",
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand"
+    "test": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --runInBand",
+    "seed": "ts-node src/utils/seed.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

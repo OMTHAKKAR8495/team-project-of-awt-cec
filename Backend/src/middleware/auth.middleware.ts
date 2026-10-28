@@ -5,6 +5,7 @@ import { AppError } from '../middleware/error.middleware';
 
 // ─── Express Request Type Augmentation ────────────────────────────────────────
 
+/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace Express {
     interface Request {
@@ -12,6 +13,7 @@ declare global {
     }
   }
 }
+/* eslint-enable @typescript-eslint/no-namespace */
 
 // ─── Middleware ────────────────────────────────────────────────────────────────
 
