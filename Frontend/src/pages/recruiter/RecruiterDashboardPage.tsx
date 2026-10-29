@@ -39,8 +39,8 @@ export const RecruiterDashboardPage: React.FC = () => {
     try {
       // Fetch jobs and candidates concurrently using real backend list endpoints
       const [jobsRes, candidatesRes] = await Promise.all([
-        getJobs({ limit: 10 }),
-        getCandidates({ limit: 10 }),
+        getJobs({ limit: 100 }),
+        getCandidates({ limit: 100 }),
       ]);
 
       setJobs(jobsRes.data);
