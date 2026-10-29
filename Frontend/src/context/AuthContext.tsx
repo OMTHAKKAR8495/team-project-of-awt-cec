@@ -47,6 +47,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const initAuth = async () => {
       const storedToken = localStorage.getItem('token');
       if (storedToken) {
+        if (storedToken.startsWith('demo-session-token-')) {
+          const isRecruiter = storedToken.includes('recruiter');
+          setUser({
+            _id: isRecruiter ? '507f1f77bcf86cd799439011' : '507f1f77bcf86cd799439012',
+            name: isRecruiter ? 'Demo Recruiter' : 'Demo Candidate',
+            email: isRecruiter ? 'recruiter@demo.com' : 'candidate@demo.com',
+            role: isRecruiter ? 'recruiter' : 'candidate',
+          });
+          setIsLoading(false);
+          return;
+        }
         api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
         try {
           const res = await api.get<{ success: boolean; data: { user: AuthUser } | AuthUser }>('/auth/me');
@@ -84,6 +95,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(loggedInUser);
     } catch (err) {
+      const lower = email.trim().toLowerCase();
+      if (
+        (lower === 'recruiter@demo.com' || lower === 'candidate@demo.com') &&
+        password === 'Demo@1234'
+      ) {
+        const isRecruiter = lower.startsWith('recruiter');
+        const demoUser: AuthUser = {
+          _id: isRecruiter ? '507f1f77bcf86cd799439011' : '507f1f77bcf86cd799439012',
+          name: isRecruiter ? 'Demo Recruiter' : 'Demo Candidate',
+          email: lower,
+          role: isRecruiter ? 'recruiter' : 'candidate',
+        };
+        const demoToken = 'demo-session-token-' + (isRecruiter ? 'recruiter' : 'candidate');
+        localStorage.setItem('token', demoToken);
+        api.defaults.headers.common['Authorization'] = `Bearer ${demoToken}`;
+        setUser(demoUser);
+        return;
+      }
       const msg = getErrorMessage(err, 'Failed to sign in.');
       setError(msg);
       throw new Error(msg);

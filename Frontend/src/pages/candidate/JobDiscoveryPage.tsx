@@ -230,7 +230,7 @@ export const JobDiscoveryPage: React.FC = () => {
             <JobCardSkeleton key={i} />
           ))}
         </div>
-      ) : jobs.length === 0 ? (
+      ) : !error && jobs.length === 0 ? (
         <EmptyState
           icon={Briefcase}
           title="No Job Postings Found"
@@ -244,7 +244,7 @@ export const JobDiscoveryPage: React.FC = () => {
           }
           onAction={handleResetFilters}
         />
-      ) : (
+      ) : !error && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {jobs.map(job => (
             <JobCard

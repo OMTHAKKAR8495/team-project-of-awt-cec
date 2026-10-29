@@ -45,7 +45,7 @@ export const ResumeAnalyzerPage: React.FC = () => {
       try {
         const res = await getJobs({ limit: 50, status: 'open' });
         setAvailableJobs(res.data);
-        if (preselectedJobId && res.data.some(j => j._id === preselectedJobId)) {
+        if (preselectedJobId && res.data.some((j: Job) => j._id === preselectedJobId)) {
           setSelectedJobId(preselectedJobId);
         } else if (res.data.length > 0) {
           setSelectedJobId(prev => prev || res.data[0]._id);

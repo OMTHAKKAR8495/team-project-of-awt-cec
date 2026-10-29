@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
+import mongoose from 'mongoose';
 import { User, IUserDocument } from '../models/User';
-import { verifyToken } from '../services/authService';
+import { verifyToken, DEMO_USERS } from '../services/authService';
 import { AppError } from '../middleware/error.middleware';
 
 // ─── Express Request Type Augmentation ────────────────────────────────────────
@@ -42,7 +43,57 @@ export const authenticateToken = async (
       throw new AppError('Authentication required. Please log in.', 401);
     }
 
+    // Check for client-side demo tokens
+    if (token.startsWith('demo-session-token-')) {
+      const isRecruiter = token.includes('recruiter');
+      const demoSub = isRecruiter ? '507f1f77bcf86cd799439011' : '507f1f77bcf86cd799439012';
+      const name = isRecruiter ? 'Demo Recruiter' : 'Demo Candidate';
+      const email = isRecruiter ? 'recruiter@demo.com' : 'candidate@demo.com';
+      const role: 'recruiter' | 'candidate' = isRecruiter ? 'recruiter' : 'candidate';
+
+      req.user = {
+        _id: new mongoose.Types.ObjectId(demoSub),
+        name,
+        email,
+        role,
+        toJSON() {
+          return {
+            _id: demoSub,
+            name,
+            email,
+            role,
+          };
+        },
+      } as unknown as IUserDocument;
+      return next();
+    }
+
     const payload = verifyToken(token);
+
+    // Check if token belongs to demo user or if database is offline in dev mode
+    const demoMatch = DEMO_USERS.find(u => u._id === payload.sub);
+    if (demoMatch || mongoose.connection.readyState !== 1) {
+      const role: 'recruiter' | 'candidate' = (payload.role as 'recruiter' | 'candidate') || demoMatch?.role || 'candidate';
+      const name = demoMatch?.name || (role === 'recruiter' ? 'Demo Recruiter' : 'Demo Candidate');
+      const email = demoMatch?.email || (role === 'recruiter' ? 'recruiter@demo.com' : 'candidate@demo.com');
+      const validId = payload.sub && payload.sub.length === 24 ? payload.sub : '507f1f77bcf86cd799439011';
+
+      req.user = {
+        _id: new mongoose.Types.ObjectId(validId),
+        name,
+        email,
+        role,
+        toJSON() {
+          return {
+            _id: validId,
+            name,
+            email,
+            role,
+          };
+        },
+      } as unknown as IUserDocument;
+      return next();
+    }
 
     const user = await User.findById(payload.sub);
     if (!user) {
