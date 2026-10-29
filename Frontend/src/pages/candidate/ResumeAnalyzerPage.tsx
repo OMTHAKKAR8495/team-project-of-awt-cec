@@ -57,6 +57,19 @@ export const ResumeAnalyzerPage: React.FC = () => {
     loadJobs();
   }, [preselectedJobId]);
 
+  const handleLoadSampleResume = (type: 'fullstack' | 'data_scientist') => {
+    setError(null);
+    if (type === 'fullstack') {
+      const text = `AARAV SHARMA\nFull Stack Software Engineer | aarav.sharma@example.com | +91 98765 43210\n\nSUMMARY\nPassionate Full Stack Engineer with 3+ years of experience building scalable web applications using React, Node.js, TypeScript, and Cloud Infrastructure (AWS, Docker).\n\nSKILLS\nReact, TypeScript, JavaScript, Node.js, Express, MongoDB, PostgreSQL, REST APIs, GraphQL, Docker, AWS, Git, Tailwind CSS, Jest, CI/CD\n\nEXPERIENCE\nSoftware Developer | NexTech Solutions (2023 - Present)\n- Developed scalable microservices using Node.js & React.\n- Reduced page load latency by 42% through web performance optimization.\n\nEDUCATION\nB.Tech in Computer Science (2019 - 2023)`;
+      const sampleFile = new File([text], 'Aarav_Sharma_FullStack_Resume.txt', { type: 'text/plain' });
+      setResumeFile(sampleFile);
+    } else {
+      const text = `PRIYA PATEL\nData Scientist | priya.patel@example.com | +91 98123 45678\n\nSUMMARY\nData Scientist with expertise in Machine Learning, Deep Learning, Natural Language Processing (NLP), Python, and PyTorch.\n\nSKILLS\nPython, PyTorch, TensorFlow, Scikit-learn, Pandas, NumPy, Machine Learning, Deep Learning, NLP, SQL, GCP, FastAPI, Docker\n\nEXPERIENCE\nMachine Learning Engineer | DataGenix AI (2023 - Present)\n- Trained transformer-based NLP models with 94.8% accuracy.\n\nEDUCATION\nM.Tech in AI & Data Science (2019 - 2021)`;
+      const sampleFile = new File([text], 'Priya_Patel_DataScientist_Resume.txt', { type: 'text/plain' });
+      setResumeFile(sampleFile);
+    }
+  };
+
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -259,6 +272,28 @@ export const ResumeAnalyzerPage: React.FC = () => {
               />
             </div>
           )}
+
+          {/* Quick Sample Presets from Reference */}
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-500" />
+              Quick Sample Resumes:
+            </span>
+            <button
+              type="button"
+              onClick={() => handleLoadSampleResume('fullstack')}
+              className="text-xs px-2.5 py-1 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium border border-indigo-200 transition-colors cursor-pointer"
+            >
+              Full-Stack Engineer (Aarav)
+            </button>
+            <button
+              type="button"
+              onClick={() => handleLoadSampleResume('data_scientist')}
+              className="text-xs px-2.5 py-1 rounded-md bg-purple-50 hover:bg-purple-100 text-purple-700 font-medium border border-purple-200 transition-colors cursor-pointer"
+            >
+              Data Scientist (Priya)
+            </button>
+          </div>
 
           {/* Resume Upload Dropzone */}
           <FileDropzone
