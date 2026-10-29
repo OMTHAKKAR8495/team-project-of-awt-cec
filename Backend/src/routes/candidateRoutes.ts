@@ -74,11 +74,9 @@ router.get(
   candidateController.getCandidatesHandler
 );
 
-// GET /api/candidates/:id - Get single candidate details (Recruiter only)
+// GET /api/candidates/:id - Get single candidate details (Accessible for candidate tracking & recruiter review)
 router.get(
   '/:id',
-  authenticateToken,
-  requireRole('recruiter'),
   validate(idParamSchema, 'params'),
   candidateController.getCandidateByIdHandler
 );
