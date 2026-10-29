@@ -108,7 +108,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     { to: '/analyze-resume', label: 'Resume Analyzer', badge: 'AI', badgeColor: 'bg-cyan-400/90 text-slate-950 font-bold' },
     { to: '/job-matches', label: 'Job Matches' },
     { to: '/interview-studio', label: 'Interview Studio' },
-    { to: '/database', label: 'Database' },
+    ...(user?.role === 'recruiter' ? [{ to: '/database', label: 'Database' }] : []),
     { to: '/contact', label: 'Contact' },
   ];
 
