@@ -49,9 +49,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (storedToken) {
         api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
         try {
-          const res = await api.get<{ success: boolean; data: AuthUser }>('/auth/me');
+          const res = await api.get<{ success: boolean; data: { user: AuthUser } | AuthUser }>('/auth/me');
           if (isMounted && res.data?.data) {
-            setUser(res.data.data);
+            const raw = res.data.data;
+            const profile = ('user' in raw && raw.user) ? raw.user : (raw as AuthUser);
+            setUser(profile);
           }
         } catch {
           // Token expired or invalid
@@ -147,6 +149,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = (): AuthContextValue => {
   const context = useContext(AuthContext);
   if (!context) {
