@@ -2,7 +2,7 @@ import './config/env';
 import http from 'http';
 import app from './app';
 import { connectDatabase, disconnectDatabase } from './config/database';
-import { isSupabaseConfigured, checkSupabaseConnection, isSupabaseReady } from './config/supabase';
+import { isSupabaseConfigured, checkSupabaseConnection, isSupabaseReady, stopSupabaseHealthCheck } from './config/supabase';
 
 interface ServerConfig {
   port: number;
@@ -44,6 +44,7 @@ const handleGracefulShutdown = async (signal: string): Promise<void> => {
   if (serverInstance) {
     serverInstance.close(async () => {
       console.log('[Shutdown] HTTP server closed.');
+      stopSupabaseHealthCheck();
       await disconnectDatabase();
       console.log('[Shutdown] All connections terminated cleanly. Exiting.');
       process.exit(0);
@@ -55,6 +56,7 @@ const handleGracefulShutdown = async (signal: string): Promise<void> => {
       process.exit(1);
     }, 10000);
   } else {
+    stopSupabaseHealthCheck();
     await disconnectDatabase();
     process.exit(0);
   }
@@ -76,6 +78,9 @@ export const startServer = async (): Promise<http.Server> => {
       if (supabaseConnected) {
         console.log(`[Database] ✅ Supabase PostgreSQL connected successfully!`);
       } else {
+        if (!config.mongoUri && config.nodeEnv === 'production') {
+          throw new Error('[Startup Error] Could not reach Supabase endpoint and no MongoDB URI is configured in production.');
+        }
         console.warn(`[Startup Warning] Could not reach Supabase endpoint.`);
       }
     }
