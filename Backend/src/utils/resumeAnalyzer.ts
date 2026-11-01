@@ -414,3 +414,209 @@ export const calculateATSScore = (
     },
   };
 };
+
+/**
+ * Breakdown metrics for general resume quality and ATS compliance
+ */
+export interface GeneralBreakdown {
+  structureScore: number;
+  skillsScore: number;
+  impactScore: number;
+  completenessScore: number;
+  wordCount: number;
+  sectionsDetected: string[];
+  missingSections: string[];
+  actionVerbsCount: number;
+  quantifiableMetricsCount: number;
+}
+
+export interface GeneralATSAnalysisResult extends ATSAnalysisResult {
+  mode: 'general';
+  generalBreakdown: GeneralBreakdown;
+  strengths: string[];
+  recommendations: string[];
+}
+
+/**
+ * Calculates a comprehensive General Resume ATS & Quality Score independent of specific jobs.
+ * Evaluates formatting, structure, technical skill breadth, action verbs, and quantifiable impact.
+ */
+export const calculateGeneralResumeScore = (
+  resumeText: string,
+  candidateSkills: string[]
+): GeneralATSAnalysisResult => {
+  const words = resumeText.trim().split(/\s+/).filter(Boolean);
+  const wordCount = words.length;
+
+  // 1. Structure & Sections Audit (Max 25 pts)
+  const candidateSections: { name: string; pattern: RegExp }[] = [
+    { name: 'Contact Information', pattern: /[\w.+-]+@[\w-]+\.[\w.-]+/i },
+    { name: 'Professional Summary', pattern: /\b(summary|profile|about me|objective|professional overview)\b/i },
+    { name: 'Work Experience', pattern: /\b(experience|work history|employment|career history|professional background)\b/i },
+    { name: 'Education', pattern: /\b(education|academic background|degree|university|college|qualifications|bachelor|master|b\.tech|m\.tech|b\.s\.|m\.s\.)\b/i },
+    { name: 'Skills & Competencies', pattern: /\b(skills|technical skills|competencies|technologies|expertise|toolkit)\b/i },
+    { name: 'Projects & Portfolio', pattern: /\b(projects|key initiatives|portfolio|personal projects|academic projects)\b/i },
+    { name: 'Certifications & Honors', pattern: /\b(certifications|certificates|licenses|achievements|honors|awards|hackathons)\b/i },
+  ];
+
+  const sectionsDetected: string[] = [];
+  const missingSections: string[] = [];
+
+  for (const sec of candidateSections) {
+    if (sec.pattern.test(resumeText)) {
+      sectionsDetected.push(sec.name);
+    } else {
+      missingSections.push(sec.name);
+    }
+  }
+
+  // 5 pts per detected standard section up to 25
+  const structureScore = Math.min(25, sectionsDetected.length * 4 + 5);
+
+  // 2. Completeness & Contact Channels (Max 20 pts)
+  let completenessScore = 0;
+  const hasEmail = /[\w.+-]+@[\w-]+\.[\w.-]+/i.test(resumeText);
+  const hasPhone = /(?:\+?\d{1,3}[-.\s]?)?(?:\(?\d{2,4}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}/.test(resumeText);
+  const hasLinks = /(?:github\.com|linkedin\.com|gitlab\.com|leetcode\.com|portfolio|behance\.net|dribbble\.com|https?:\/\/)/i.test(resumeText);
+
+  if (hasEmail) completenessScore += 7;
+  if (hasPhone) completenessScore += 6;
+  if (hasLinks) completenessScore += 7;
+
+  // 3. Technical & Domain Skill Breadth (Max 30 pts)
+  let skillsScore = 0;
+  const skillCount = candidateSkills.length;
+  if (skillCount >= 12) skillsScore = 30;
+  else if (skillCount >= 9) skillsScore = 26;
+  else if (skillCount >= 6) skillsScore = 22;
+  else if (skillCount >= 3) skillsScore = 16;
+  else if (skillCount >= 1) skillsScore = 10;
+  else skillsScore = 4;
+
+  // 4. Action Verbs & Quantifiable Impact (Max 25 pts)
+  const actionVerbs = [
+    'led', 'developed', 'architected', 'managed', 'implemented', 'optimized',
+    'built', 'engineered', 'delivered', 'reduced', 'increased', 'designed',
+    'created', 'automated', 'spearheaded', 'collaborated', 'deployed',
+    'orchestrated', 'streamlined', 'mentored', 'analyzed', 'refactored',
+    'integrated', 'accelerated', 'launched', 'scaled', 'programmed', 'published'
+  ];
+
+  const lowerText = resumeText.toLowerCase();
+  const matchedVerbs = actionVerbs.filter(verb => {
+    const rx = new RegExp(`\\b${verb}\\b`, 'i');
+    return rx.test(lowerText);
+  });
+  const actionVerbsCount = matchedVerbs.length;
+
+  let verbsScore = 0;
+  if (actionVerbsCount >= 8) verbsScore = 15;
+  else if (actionVerbsCount >= 5) verbsScore = 12;
+  else if (actionVerbsCount >= 3) verbsScore = 8;
+  else if (actionVerbsCount >= 1) verbsScore = 4;
+
+  // Quantifiable metrics: percentages (%), multipliers (x), currency ($), large numbers (e.g. 10k, 50+)
+  const metricMatches = resumeText.match(/\b\d+(?:\.\d+)?%\b|\$\d+(?:,\d+)*(?:\.\d+)?|\b\d+x\b|\b\d+(?:,\d+)*\+\s*(?:users|clients|requests|ms|qps|tb|gb|records|downloads|stars|commits)\b/gi) || [];
+  const quantifiableMetricsCount = metricMatches.length;
+
+  let metricsScore = 2;
+  if (quantifiableMetricsCount >= 4) metricsScore = 10;
+  else if (quantifiableMetricsCount >= 2) metricsScore = 7;
+  else if (quantifiableMetricsCount >= 1) metricsScore = 4;
+
+  const impactScore = Math.min(25, verbsScore + metricsScore);
+
+  // Overall Score Calculation (Clamped 0 - 100)
+  const totalScore = Math.min(100, Math.max(0, structureScore + completenessScore + skillsScore + impactScore));
+
+  // Synthesize Strengths
+  const strengths: string[] = [];
+  if (candidateSkills.length >= 8) {
+    strengths.push(`Rich technical breadth with ${candidateSkills.length} verified technical skills detected.`);
+  } else if (candidateSkills.length >= 4) {
+    strengths.push(`Solid technical base with ${candidateSkills.length} identified core skills.`);
+  }
+
+  if (quantifiableMetricsCount >= 2) {
+    strengths.push('Strong demonstration of business impact utilizing quantifiable performance metrics and numbers.');
+  }
+
+  if (actionVerbsCount >= 5) {
+    strengths.push(`Proactive, accomplishment-driven language featuring ${actionVerbsCount} strong action verbs.`);
+  }
+
+  if (hasEmail && hasPhone && hasLinks) {
+    strengths.push('Comprehensive contact section complete with digital profiles (LinkedIn / GitHub / Portfolio).');
+  }
+
+  if (sectionsDetected.includes('Work Experience') && sectionsDetected.includes('Education')) {
+    strengths.push('Well-organized ATS structure with distinct chronological experience and academic history.');
+  }
+
+  if (strengths.length === 0) {
+    strengths.push('Clean plain-text readable formatting suitable for standard ATS parsing algorithms.');
+  }
+
+  // Synthesize Actionable Recommendations
+  const recommendations: string[] = [];
+  if (quantifiableMetricsCount < 2) {
+    recommendations.push('Add measurable achievements (e.g., "improved page load speed by 35%" or "scaled to 50k+ daily users") to provide concrete proof of your impact.');
+  }
+
+  if (actionVerbsCount < 5) {
+    recommendations.push('Lead your bullet points with high-impact action verbs (e.g., "Architected", "Engineered", "Optimized") instead of passive role descriptions.');
+  }
+
+  if (!hasLinks) {
+    recommendations.push('Include direct links to your GitHub, LinkedIn, or portfolio website to facilitate recruiter vetting.');
+  }
+
+  if (!sectionsDetected.includes('Professional Summary')) {
+    recommendations.push('Add a concise 2-3 sentence Professional Summary at the top highlighting your core domain expertise and career achievements.');
+  }
+
+  if (candidateSkills.length < 6) {
+    recommendations.push('Expand your Skills section with relevant tools, libraries, and frameworks you have used across projects.');
+  }
+
+  if (wordCount < 250) {
+    recommendations.push('Your resume content is relatively brief (under 250 words); elaborate on specific project deliverables, responsibilities, and outcomes.');
+  } else if (wordCount > 1200) {
+    recommendations.push('Consider trimming excessive text to keep your resume concise and within the ideal 1-2 page executive limit.');
+  }
+
+  // Explanation
+  const ratingTier =
+    totalScore >= 88 ? 'Exceptional' : totalScore >= 75 ? 'Strong' : totalScore >= 60 ? 'Moderate' : 'Needs Optimization';
+
+  const explanation = `General ATS Quality Score: ${totalScore}/100 (${ratingTier}). Breakdown: Structure & Formatting ${structureScore}/25, Skill Diversity ${skillsScore}/30, Impact & Phrasing ${impactScore}/25, and Contact Completeness ${completenessScore}/20.`;
+
+  return {
+    score: totalScore,
+    mode: 'general',
+    extractedSkills: candidateSkills,
+    matchedSkills: candidateSkills,
+    missingSkills: [],
+    explanation,
+    strengths,
+    recommendations,
+    generalBreakdown: {
+      structureScore,
+      skillsScore,
+      impactScore,
+      completenessScore,
+      wordCount,
+      sectionsDetected,
+      missingSections,
+      actionVerbsCount,
+      quantifiableMetricsCount,
+    },
+    breakdown: {
+      requiredSkillsTotal: candidateSkills.length,
+      requiredSkillsMatched: candidateSkills.length,
+      preferredSkillsTotal: 0,
+      preferredSkillsMatched: 0,
+      requiredCoveragePercent: totalScore,
+    },
+  };
+};
