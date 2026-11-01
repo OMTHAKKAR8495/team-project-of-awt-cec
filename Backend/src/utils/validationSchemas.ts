@@ -1,9 +1,15 @@
 import { z } from 'zod';
 import mongoose from 'mongoose';
 
-export const objectIdSchema = z.string().refine(val => mongoose.Types.ObjectId.isValid(val), {
-  message: 'Invalid MongoDB ObjectId format.',
-});
+export const objectIdSchema = z.string().refine(
+  val =>
+    mongoose.Types.ObjectId.isValid(val) ||
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val) ||
+    val.startsWith('cand-offline-'),
+  {
+    message: 'Invalid identifier format (must be a valid ObjectId or UUID).',
+  }
+);
 
 export const employmentTypeEnum = z.enum([
   'full-time',
@@ -161,61 +167,72 @@ export const loginSchema = z.object({
 
 // ─── Resume Analysis Schema ───────────────────────────────────────────────────
 
-export const analyzeResumeBodySchema = z.object({
-  jobId: objectIdSchema.optional(),
-  jobTitle: z.string().trim().optional(),
-  requiredSkills: z
-    .union([z.array(z.string().trim()), z.string()])
-    .transform(val => {
-      if (typeof val === 'string') {
-        try {
-          const parsed = JSON.parse(val);
-          if (Array.isArray(parsed)) return parsed.map(s => String(s).trim());
-        } catch {
-          return val
-            .split(',')
-            .map(s => s.trim())
-            .filter(Boolean);
+export const analyzeResumeBodySchema = z
+  .object({
+    mode: z.enum(['job', 'custom', 'general']).optional().default('job'),
+    jobId: objectIdSchema.optional(),
+    jobTitle: z.string().trim().optional(),
+    requiredSkills: z
+      .union([z.array(z.string().trim()), z.string()])
+      .transform(val => {
+        if (typeof val === 'string') {
+          try {
+            const parsed = JSON.parse(val);
+            if (Array.isArray(parsed)) return parsed.map(s => String(s).trim());
+          } catch {
+            return val
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean);
+          }
         }
-      }
-      return val;
-    })
-    .refine(arr => Array.isArray(arr) && arr.length > 0, {
-      message: 'At least one required skill must be provided for ATS analysis.',
-    })
-    .optional(),
-  preferredSkills: z
-    .union([z.array(z.string().trim()), z.string()])
-    .transform(val => {
-      if (typeof val === 'string') {
-        try {
-          const parsed = JSON.parse(val);
-          if (Array.isArray(parsed)) return parsed.map(s => String(s).trim());
-        } catch {
-          return val
-            .split(',')
-            .map(s => s.trim())
-            .filter(Boolean);
+        return val;
+      })
+      .optional(),
+    preferredSkills: z
+      .union([z.array(z.string().trim()), z.string()])
+      .transform(val => {
+        if (typeof val === 'string') {
+          try {
+            const parsed = JSON.parse(val);
+            if (Array.isArray(parsed)) return parsed.map(s => String(s).trim());
+          } catch {
+            return val
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean);
+          }
         }
-      }
-      return val;
-    })
-    .optional(),
-  requirements: z
-    .union([z.array(z.string().trim()), z.string()])
-    .transform(val => {
-      if (typeof val === 'string') {
-        try {
-          const parsed = JSON.parse(val);
-          if (Array.isArray(parsed)) return parsed.map(s => String(s).trim());
-        } catch {
-          return val
-            .split(',')
-            .map(s => s.trim())
-            .filter(Boolean);
+        return val;
+      })
+      .optional(),
+    requirements: z
+      .union([z.array(z.string().trim()), z.string()])
+      .transform(val => {
+        if (typeof val === 'string') {
+          try {
+            const parsed = JSON.parse(val);
+            if (Array.isArray(parsed)) return parsed.map(s => String(s).trim());
+          } catch {
+            return val
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean);
+          }
         }
-      }
-      return val;
-    })
-    .optional(),
-});
+        return val;
+      })
+      .optional(),
+  })
+  .refine(
+    data => {
+      // General evaluation mode does not require specific job or skills
+      if (data.mode === 'general') return true;
+      // Job and custom modes require either jobId or required skills
+      return Boolean(data.jobId || (data.requiredSkills && data.requiredSkills.length > 0));
+    },
+    {
+      message: 'Please select a job position, enter required skills, or choose General Resume Score mode.',
+      path: ['jobId'],
+    }
+  );
