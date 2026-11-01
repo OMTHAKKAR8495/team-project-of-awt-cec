@@ -1,9 +1,8 @@
 @import 'tailwindcss';
 
+@variant dark (&:where(.dark, .dark *));
+
 @layer base {
-  * {
-    border-color: rgba(255, 255, 255, 0.08);
-  }
   body {
     font-family:
       'Plus Jakarta Sans',
@@ -15,10 +14,21 @@
       Ubuntu,
       Cantarell,
       sans-serif;
-    background-color: #070913;
-    color: #f1f5f9;
     overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
+}
+
+/* Base Body Styles */
+html.dark body,
+html:not(.light) body {
+  background-color: #070913;
+  color: #f1f5f9;
+}
+
+html.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
 }
 
 /* Custom subtle scrollbar */
@@ -26,15 +36,28 @@
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track {
+html.dark ::-webkit-scrollbar-track,
+html:not(.light) ::-webkit-scrollbar-track {
   background: #070913;
 }
-::-webkit-scrollbar-thumb {
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+html.dark ::-webkit-scrollbar-thumb,
+html:not(.light) ::-webkit-scrollbar-thumb {
   background: #1e293b;
   border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover {
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover,
+html:not(.light) ::-webkit-scrollbar-thumb:hover {
   background: #334155;
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* Focus indicator accessibility */
@@ -43,18 +66,38 @@
   outline-offset: 2px;
 }
 
-/* Glassmorphic and subtle surface elevation styles */
+/* ==========================================================================
+   GLASSMORPHIC CARDS - ADAPTIVE (DARK & LIGHT)
+   ========================================================================== */
 .nexus-glass-card {
-  background: rgba(13, 17, 38, 0.7);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.nexus-glass-card:hover {
+html.dark .nexus-glass-card,
+html:not(.light) .nexus-glass-card {
+  background: rgba(13, 17, 38, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+}
+
+html.dark .nexus-glass-card:hover,
+html:not(.light) .nexus-glass-card:hover {
   border-color: rgba(99, 102, 241, 0.35);
   box-shadow: 0 8px 30px -4px rgba(99, 102, 241, 0.15);
+  transform: translateY(-2px);
+}
+
+html.light .nexus-glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+}
+
+html.light .nexus-glass-card:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 8px 30px -4px rgba(99, 102, 241, 0.12);
   transform: translateY(-2px);
 }
 
@@ -69,4 +112,112 @@
   border-color: #cbd5e1;
   box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.06), 0 4px 8px -4px rgba(15, 23, 42, 0.04);
   transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   LIGHT MODE COMPREHENSIVE OVERRIDES
+   ========================================================================== */
+html.light {
+  color-scheme: light;
+}
+
+/* Light mode background resets */
+html.light [class*="bg-[#070913]"],
+html.light [class*="bg-[#050711]"] {
+  background-color: #f8fafc !important;
+}
+
+html.light [class*="bg-[#0b0f24]"],
+html.light [class*="bg-[#0a0d1e]"],
+html.light [class*="bg-[#0c1026]"],
+html.light [class*="bg-[#0f142e]"],
+html.light [class*="bg-[#0d122e]"],
+html.light [class*="bg-[#080d22]"],
+html.light [class*="bg-[#090d22]"],
+html.light [class*="bg-[#0d1233]"],
+html.light [class*="bg-[#0d1127]"],
+html.light [class*="bg-[#060814]"] {
+  background-color: #ffffff !important;
+}
+
+/* Light mode transparent backgrounds & borders */
+html.light .bg-white\/5 {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+
+html.light .bg-white\/10 {
+  background-color: rgba(15, 23, 42, 0.07) !important;
+}
+
+html.light .hover\:bg-white\/5:hover {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+
+html.light .hover\:bg-white\/10:hover {
+  background-color: rgba(15, 23, 42, 0.09) !important;
+}
+
+html.light .border-white\/5,
+html.light .border-white\/10,
+html.light .border-white\/15,
+html.light .border-white\/20 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Light mode text colors */
+html.light h1.text-white,
+html.light h2.text-white,
+html.light h3.text-white,
+html.light h4.text-white,
+html.light h5.text-white,
+html.light h6.text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100,
+html.light .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Make card titles and values crisp in light mode */
+html.light .nexus-glass-card .text-3xl.text-white,
+html.light .nexus-glass-card .text-2xl.text-white,
+html.light .nexus-glass-card .text-xl.text-white,
+html.light .nexus-glass-card .font-extrabold.text-white,
+html.light .nexus-glass-card .font-bold.text-white {
+  color: #0f172a !important;
+}
+
+/* Buttons with gradient or solid backgrounds retain white text */
+html.light a[class*="bg-gradient"] *,
+html.light button[class*="bg-gradient"] *,
+html.light a[class*="bg-gradient"],
+html.light button[class*="bg-gradient"],
+html.light a[class*="bg-indigo-600"],
+html.light button[class*="bg-indigo-600"],
+html.light a[class*="bg-purple-600"],
+html.light button[class*="bg-purple-600"] {
+  color: #ffffff !important;
+}
+
+/* Inputs and interactive elements in light mode */
+html.light input:not([type="checkbox"]):not([type="radio"]),
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
 }
