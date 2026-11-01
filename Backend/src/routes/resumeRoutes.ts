@@ -7,9 +7,18 @@ import { analyzeResumeBodySchema } from '../utils/validationSchemas';
 
 const router = Router();
 
-// POST /api/analyze-resume (or /api/resumes/analyze)
+// POST /api/analyze-resume (or /api/resumes)
 router.post(
   '/',
+  uploadAndAnalysisLimiter,
+  resumeUpload.single('resume'),
+  validate(analyzeResumeBodySchema, 'body'),
+  resumeController.analyzeResumeHandler
+);
+
+// POST /api/resumes/analyze alias
+router.post(
+  '/analyze',
   uploadAndAnalysisLimiter,
   resumeUpload.single('resume'),
   validate(analyzeResumeBodySchema, 'body'),
