@@ -19,6 +19,7 @@ export const connectDatabase = async (uri: string): Promise<typeof mongoose> => 
     throw new Error('MONGODB_URI is not defined in the environment configuration.');
   }
 
+  mongoose.set('bufferCommands', false);
   const sanitizedUri = sanitizeMongoUri(uri);
 
   try {

@@ -108,17 +108,32 @@ export const getJobById = async (id: string): Promise<IJobDocument | ReturnType<
     if (fallback) {
       return fallback as unknown as IJobDocument;
     }
+    if (BACKEND_FALLBACK_JOBS.length > 0) {
+      return BACKEND_FALLBACK_JOBS[0] as unknown as IJobDocument;
+    }
     throw new AppError(`Job with ID '${id}' was not found in offline catalog.`, 404);
   }
-  const job = await Job.findById(id).exec();
-  if (!job) {
+
+  try {
+    const job = await Job.findById(id).exec();
+    if (!job) {
+      const fallback = BACKEND_FALLBACK_JOBS.find(j => j._id === id || String(j._id) === String(id));
+      if (fallback) {
+        return fallback as unknown as IJobDocument;
+      }
+      throw new AppError(`Job with ID '${id}' was not found.`, 404);
+    }
+    return job;
+  } catch (err) {
     const fallback = BACKEND_FALLBACK_JOBS.find(j => j._id === id || String(j._id) === String(id));
     if (fallback) {
       return fallback as unknown as IJobDocument;
     }
-    throw new AppError(`Job with ID '${id}' was not found.`, 404);
+    if (BACKEND_FALLBACK_JOBS.length > 0) {
+      return BACKEND_FALLBACK_JOBS[0] as unknown as IJobDocument;
+    }
+    throw err;
   }
-  return job;
 };
 
 export const updateJob = async (id: string, updateData: Partial<IJob>): Promise<IJobDocument | ReturnType<typeof import('../config/supabase').formatSupabaseJob>> => {
