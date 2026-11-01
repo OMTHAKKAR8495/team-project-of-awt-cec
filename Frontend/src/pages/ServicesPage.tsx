@@ -126,19 +126,19 @@ export const ServicesPage: React.FC = () => {
     <div className="space-y-20 sm:space-y-28 pb-16">
       {/* 1. HERO */}
       <section className="relative pt-10 sm:pt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-950/60 border border-indigo-500/40 text-cyan-300">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-500/40 text-purple-800 dark:text-cyan-300">
+          <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-cyan-400" />
           <span>ENTERPRISE DIVISIONS &amp; CAPABILITIES</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-4xl mx-auto">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight max-w-4xl mx-auto">
           Delivering Cross-Sector Excellence Across{' '}
-          <span className="bg-gradient-to-r from-purple-400 via-indigo-300 to-cyan-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 dark:from-purple-400 dark:via-indigo-300 dark:to-cyan-400 bg-clip-text text-transparent">
             6 Specialized Business Divisions
           </span>
         </h1>
 
-        <p className="text-sm sm:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-sm sm:text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
           From quantum-scale cloud engineering to clean microgrid installations and biomedical informatics, discover the multidisciplinary divisions powering Fortune 500 transformation.
         </p>
       </section>
@@ -148,7 +148,7 @@ export const ServicesPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Division Navigation Tabs */}
           <div className="lg:col-span-5 space-y-3">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1">
               Select Business Division
             </div>
             {divisionDetails.map((div, idx) => {
@@ -160,8 +160,8 @@ export const ServicesPage: React.FC = () => {
                   onClick={() => setSelectedDivision(idx)}
                   className={`w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 cursor-pointer ${
                     isSelected
-                      ? 'bg-gradient-to-r from-[#11163a] to-[#0c122b] border-cyan-500/60 shadow-lg shadow-indigo-900/20'
-                      : 'bg-[#090d20]/60 border-white/5 hover:border-white/20 text-slate-400 hover:text-white'
+                      ? 'bg-indigo-50 dark:bg-gradient-to-r dark:from-[#11163a] dark:to-[#0c122b] border-indigo-300 dark:border-cyan-500/60 shadow-sm'
+                      : 'bg-white dark:bg-[#090d20]/60 border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/20 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
@@ -169,21 +169,21 @@ export const ServicesPage: React.FC = () => {
                       className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                         isSelected
                           ? 'bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white shadow-md shadow-cyan-500/20'
-                          : 'bg-white/5 text-slate-400'
+                          : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400'
                       }`}
                     >
                       <Icon className="w-5 h-5" />
                     </div>
                     <div className="truncate">
-                      <div className={`font-bold text-sm truncate ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                      <div className={`font-bold text-sm truncate ${isSelected ? 'text-indigo-900 dark:text-white' : 'text-slate-800 dark:text-slate-300'}`}>
                         {div.title}
                       </div>
-                      <div className="text-[11px] text-slate-400">{div.roles}</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400">{div.roles}</div>
                     </div>
                   </div>
                   <ArrowRight
                     className={`w-4 h-4 shrink-0 transition-transform ${
-                      isSelected ? 'text-cyan-400 translate-x-1' : 'text-slate-600'
+                      isSelected ? 'text-indigo-600 dark:text-cyan-400 translate-x-1' : 'text-slate-400 dark:text-slate-600'
                     }`}
                   />
                 </button>
@@ -192,36 +192,36 @@ export const ServicesPage: React.FC = () => {
           </div>
 
           {/* Right Column: Division Deep Dive Detail Panel */}
-          <div className="lg:col-span-7 nexus-glass-card rounded-3xl p-6 sm:p-10 border border-indigo-500/30 bg-gradient-to-br from-[#0e1438] via-[#090d24] to-[#080a1c] space-y-8">
+          <div className="lg:col-span-7 nexus-glass-card rounded-3xl p-6 sm:p-10 border border-slate-200 dark:border-indigo-500/30 bg-white dark:bg-gradient-to-br dark:from-[#0e1438] dark:via-[#090d24] dark:to-[#080a1c] shadow-sm dark:shadow-none space-y-8">
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-cyan-400">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-indigo-700 dark:text-cyan-400">
                   <CurrentIcon className="w-3.5 h-3.5" />
                   <span>Division Spotlight</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
                   {current.title}
                 </h2>
-                <p className="text-sm text-slate-300 leading-relaxed">
+                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                   {current.subtitle}
                 </p>
               </div>
 
-              <span className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-800/40 text-cyan-300">
+              <span className="shrink-0 text-xs font-bold px-3 py-1.5 rounded-full bg-cyan-100 dark:bg-cyan-950/80 border border-cyan-200 dark:border-cyan-800/40 text-cyan-800 dark:text-cyan-300">
                 {current.roles}
               </span>
             </div>
 
             {/* Core Capabilities */}
             <div className="space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-cyan-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-indigo-600 dark:text-cyan-400" />
                 <span>Core Capabilities &amp; Systems</span>
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {current.capabilities.map((cap, i) => (
-                  <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/5 flex items-start gap-2.5 text-xs text-slate-200">
-                    <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                  <div key={i} className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 flex items-start gap-2.5 text-xs text-slate-700 dark:text-slate-200">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-cyan-400 shrink-0 mt-0.5" />
                     <span>{cap}</span>
                   </div>
                 ))}
@@ -230,12 +230,12 @@ export const ServicesPage: React.FC = () => {
 
             {/* Tech Stack & Tooling */}
             <div className="space-y-2">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                 Core Technologies &amp; Standards
               </div>
               <div className="flex flex-wrap gap-2">
                 {current.technologies.map(tech => (
-                  <span key={tech} className="px-3 py-1 rounded-lg text-xs font-medium bg-indigo-950/80 border border-indigo-700/40 text-indigo-300">
+                  <span key={tech} className="px-3 py-1 rounded-lg text-xs font-medium bg-indigo-50 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-700/40 text-indigo-800 dark:text-indigo-300">
                     {tech}
                   </span>
                 ))}
@@ -243,12 +243,12 @@ export const ServicesPage: React.FC = () => {
             </div>
 
             {/* Impact Metric Banner */}
-            <div className="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-xs font-bold text-cyan-300">
-                <Zap className="w-4 h-4 text-cyan-400 shrink-0" />
+            <div className="p-4 rounded-2xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/30 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-xs font-bold text-cyan-900 dark:text-cyan-300">
+                <Zap className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
                 <span>Proven Field Performance:</span>
               </div>
-              <div className="text-xs text-white font-semibold text-right">
+              <div className="text-xs text-slate-900 dark:text-white font-semibold text-right">
                 {current.impactMetric}
               </div>
             </div>
@@ -263,7 +263,7 @@ export const ServicesPage: React.FC = () => {
               </Link>
               <Link
                 to="/contact"
-                className="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-semibold text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 text-center transition-colors"
+                className="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-center transition-colors"
               >
                 Inquire Enterprise Engagement
               </Link>
@@ -275,40 +275,40 @@ export const ServicesPage: React.FC = () => {
       {/* 3. GLOBAL INFRASTRUCTURE PILLARS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="text-center space-y-2">
-          <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">INTEGRATED ECOSYSTEM</div>
-          <h2 className="text-3xl font-extrabold text-white">How Our Divisions Operate Synergistically</h2>
-          <p className="text-sm text-slate-400 max-w-xl mx-auto">
+          <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-cyan-400">INTEGRATED ECOSYSTEM</div>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">How Our Divisions Operate Synergistically</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
             Cross-discipline squads collaborate to deliver unified enterprise platforms.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="nexus-glass-card rounded-2xl p-6 border border-white/10 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-white/5 text-cyan-400 flex items-center justify-center">
+          <div className="nexus-glass-card rounded-2xl p-6 border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent shadow-xs dark:shadow-none space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-white/5 text-indigo-600 dark:text-cyan-400 flex items-center justify-center">
               <Server className="w-5 h-5" />
             </div>
-            <h3 className="font-bold text-white text-base">Continuous Data Pipeline</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">Continuous Data Pipeline</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               Industrial sensors feeds telemetry to Software &amp; AI models, continuously optimizing grid efficiency and equipment lifespans.
             </p>
           </div>
 
-          <div className="nexus-glass-card rounded-2xl p-6 border border-white/10 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-white/5 text-cyan-400 flex items-center justify-center">
+          <div className="nexus-glass-card rounded-2xl p-6 border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent shadow-xs dark:shadow-none space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-white/5 text-indigo-600 dark:text-cyan-400 flex items-center justify-center">
               <BarChart3 className="w-5 h-5" />
             </div>
-            <h3 className="font-bold text-white text-base">Capital Allocation Accuracy</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">Capital Allocation Accuracy</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               Global Finance algorithms ingest macroeconomic indicators and ESG compliance datasets to drive intelligent M&amp;A decisions.
             </p>
           </div>
 
-          <div className="nexus-glass-card rounded-2xl p-6 border border-white/10 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-white/5 text-cyan-400 flex items-center justify-center">
+          <div className="nexus-glass-card rounded-2xl p-6 border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent shadow-xs dark:shadow-none space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-white/5 text-indigo-600 dark:text-cyan-400 flex items-center justify-center">
               <Network className="w-5 h-5" />
             </div>
-            <h3 className="font-bold text-white text-base">Automated Skill Synthesis</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">Automated Skill Synthesis</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               Our proprietary ATS and Interview Studio evaluate thousands of candidates weekly to match elite engineers with cutting-edge divisions.
             </p>
           </div>

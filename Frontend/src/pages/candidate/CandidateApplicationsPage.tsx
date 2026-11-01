@@ -85,14 +85,14 @@ export const CandidateApplicationsPage: React.FC = () => {
     <div className="space-y-8 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-950/70 text-cyan-300 border border-indigo-500/40">
-          <ClipboardList className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 dark:bg-indigo-950/70 text-indigo-800 dark:text-cyan-300 border border-indigo-200 dark:border-indigo-500/40">
+          <ClipboardList className="w-3.5 h-3.5 text-indigo-600 dark:text-cyan-400" />
           <span>Application Status Tracker</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Candidate Application History
         </h1>
-        <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
+        <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
           Monitor your submitted applications and track recruiter review progress across active positions.
         </p>
       </div>
