@@ -2,6 +2,7 @@ import './config/env';
 import http from 'http';
 import app from './app';
 import { connectDatabase, disconnectDatabase } from './config/database';
+import { isSupabaseConfigured, checkSupabaseConnection, isSupabaseReady } from './config/supabase';
 
 interface ServerConfig {
   port: number;
@@ -14,24 +15,19 @@ interface ServerConfig {
  * Validates required environment variables and returns sanitized configuration.
  */
 const validateConfig = (): ServerConfig => {
-  const port = parseInt(process.env.PORT || '5000', 10);
+  const port = parseInt(process.env.PORT || '5001', 10);
   const nodeEnv = process.env.NODE_ENV || 'development';
   const mongoUri = process.env.MONGODB_URI || '';
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
 
-  const missingVariables: string[] = [];
-  if (!mongoUri) {
-    missingVariables.push('MONGODB_URI');
-  }
-
-  if (missingVariables.length > 0) {
+  if (!mongoUri && !isSupabaseConfigured()) {
     console.error(
-      `[Startup Error] Missing required environment variable(s): ${missingVariables.join(', ')}`
+      '[Startup Error] Neither MONGODB_URI nor SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY is configured.'
     );
     console.error(
-      '[Startup Error] Please copy Backend/.env.example to Backend/.env and configure valid connection details.'
+      '[Startup Error] Please configure valid connection details in Backend/.env.'
     );
-    throw new Error(`Missing environment variables: ${missingVariables.join(', ')}`);
+    throw new Error('Missing database configuration');
   }
 
   return { port, nodeEnv, mongoUri, frontendUrl };
@@ -72,20 +68,37 @@ export const startServer = async (): Promise<http.Server> => {
     const config = validateConfig();
 
     console.log(`[Startup] Environment: ${config.nodeEnv}`);
-    console.log(`[Startup] Connecting to database...`);
 
-    // Attempt database connection
-    try {
-      await connectDatabase(config.mongoUri);
-    } catch (dbError) {
-      if (config.nodeEnv === 'production') {
-        throw dbError;
+    // 1. Attempt Supabase cloud database connection if configured
+    if (isSupabaseConfigured()) {
+      console.log(`[Startup] Connecting to Supabase cloud database...`);
+      const supabaseConnected = await checkSupabaseConnection();
+      if (supabaseConnected) {
+        console.log(`[Database] ✅ Supabase PostgreSQL connected successfully!`);
+      } else {
+        console.warn(`[Startup Warning] Could not reach Supabase endpoint.`);
       }
-      const msg = dbError instanceof Error ? dbError.message : 'Unknown database error';
-      console.warn(`[Startup Warning] Database offline in development (${msg}).`);
-      console.warn(
-        '[Startup Warning] Server starting in development mode for endpoint & UI testing.'
-      );
+    }
+
+    // 2. Attempt MongoDB connection if configured
+    if (config.mongoUri) {
+      try {
+        console.log(`[Startup] Connecting to MongoDB...`);
+        await connectDatabase(config.mongoUri);
+      } catch (dbError) {
+        if (config.nodeEnv === 'production' && !isSupabaseReady()) {
+          throw dbError;
+        }
+        const msg = dbError instanceof Error ? dbError.message : 'Unknown database error';
+        if (!isSupabaseReady()) {
+          console.warn(`[Startup Warning] Database offline in development (${msg}).`);
+          console.warn(
+            '[Startup Warning] Server starting in development mode for endpoint & UI testing.'
+          );
+        } else {
+          console.log(`[Database] Local MongoDB not reachable (${msg}); running with Supabase.`);
+        }
+      }
     }
 
     const server = app.listen(config.port, () => {

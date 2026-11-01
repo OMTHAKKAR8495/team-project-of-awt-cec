@@ -1,21 +1,30 @@
 import { Router, Request, Response } from 'express';
 import mongoose from 'mongoose';
+import { isSupabaseReady } from '../config/supabase';
 
 const router = Router();
 
-const getDatabaseStatus = (): string => {
-  switch (mongoose.connection.readyState) {
-    case 0:
-      return 'disconnected';
-    case 1:
-      return 'connected';
-    case 2:
-      return 'connecting';
-    case 3:
-      return 'disconnecting';
-    default:
-      return 'unknown';
+const getDatabaseInfo = () => {
+  if (isSupabaseReady()) {
+    return {
+      status: 'connected',
+      provider: 'supabase',
+      ready: true,
+    };
   }
+
+  const isMongoConnected = mongoose.connection.readyState === 1;
+  const status = isMongoConnected
+    ? 'connected'
+    : mongoose.connection.readyState === 2
+    ? 'connecting'
+    : 'disconnected';
+
+  return {
+    status,
+    provider: 'mongodb',
+    ready: isMongoConnected,
+  };
 };
 
 /**
@@ -23,7 +32,7 @@ const getDatabaseStatus = (): string => {
  * GET /api/health
  */
 router.get('/', (_req: Request, res: Response) => {
-  const dbStatus = getDatabaseStatus();
+  const dbInfo = getDatabaseInfo();
 
   res.status(200).json({
     status: 'ok',
@@ -31,10 +40,7 @@ router.get('/', (_req: Request, res: Response) => {
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
     service: 'college-group-project-api',
-    database: {
-      status: dbStatus,
-      ready: dbStatus === 'connected',
-    },
+    database: dbInfo,
   });
 });
 
