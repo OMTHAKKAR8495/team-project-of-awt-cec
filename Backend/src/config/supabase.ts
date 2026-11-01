@@ -23,8 +23,32 @@ export const isSupabaseConfigured = (): boolean => {
 };
 
 let isSupabaseOnline = false;
+let healthCheckTimer: NodeJS.Timeout | null = null;
 
 export const isSupabaseReady = (): boolean => isSupabaseOnline;
+
+/**
+ * Starts periodic background health check of Supabase connection.
+ */
+export const startSupabaseHealthCheck = (intervalMs = 30000): void => {
+  if (healthCheckTimer || !isSupabaseConfigured()) return;
+  healthCheckTimer = setInterval(async () => {
+    await checkSupabaseConnection();
+  }, intervalMs);
+  if (healthCheckTimer && typeof healthCheckTimer.unref === 'function') {
+    healthCheckTimer.unref();
+  }
+};
+
+/**
+ * Stops periodic background health check of Supabase connection.
+ */
+export const stopSupabaseHealthCheck = (): void => {
+  if (healthCheckTimer) {
+    clearInterval(healthCheckTimer);
+    healthCheckTimer = null;
+  }
+};
 
 /**
  * Tests connection to the Supabase REST endpoint.
@@ -35,6 +59,9 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
     isSupabaseOnline = false;
     return false;
   }
+
+  // Ensure periodic background check is active
+  startSupabaseHealthCheck();
 
   try {
     const res = await fetch(`${config.url}/rest/v1/jobs?select=id&limit=1`, {
@@ -82,11 +109,17 @@ export async function supabaseRequest<T>(
     headers['Content-Type'] = 'application/json';
   }
 
-  const response = await fetch(`${config.url}/rest/v1${path}`, {
-    method,
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${config.url}/rest/v1${path}`, {
+      method,
+      headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    });
+  } catch (networkErr) {
+    isSupabaseOnline = false;
+    throw networkErr;
+  }
 
   if (!response.ok) {
     let errMessage = `Supabase error (${response.status} ${response.statusText})`;
