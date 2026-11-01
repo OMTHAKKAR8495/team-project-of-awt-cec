@@ -51,7 +51,8 @@ export const analyzeUploadedResume = async (
     const extractedSkills = extractSkillsFromText(rawText);
 
     // If General Resume Score mode is requested or no specific target job/skills are provided
-    if (mode === 'general' || (!jobId && (!params.requiredSkills || params.requiredSkills.length === 0))) {
+    const isGeneral = mode === 'general' || (!jobId && !params.jobTitle && (!params.requiredSkills || params.requiredSkills.length === 0));
+    if (isGeneral) {
       const generalResult = calculateGeneralResumeScore(rawText, extractedSkills);
       return {
         ...generalResult,
@@ -69,13 +70,19 @@ export const analyzeUploadedResume = async (
     let targetPreferred = params.preferredSkills || [];
     let targetRequirements = params.requirements || [];
 
-    // If jobId is provided, retrieve job specifications from database
+    // If jobId is provided, retrieve job specifications from database or offline catalog
     if (jobId) {
-      const job = await getJobById(jobId);
-      targetTitle = job.title;
-      targetRequired = job.requiredSkills;
-      targetPreferred = job.preferredSkills || [];
-      targetRequirements = job.requirements || [];
+      try {
+        const job = await getJobById(jobId);
+        targetTitle = job.title || targetTitle;
+        targetRequired = job.requiredSkills && job.requiredSkills.length > 0 ? job.requiredSkills : targetRequired;
+        targetPreferred = job.preferredSkills || targetPreferred;
+        targetRequirements = job.requirements || targetRequirements;
+      } catch (jobErr) {
+        if (!targetRequired || targetRequired.length === 0) {
+          throw jobErr;
+        }
+      }
     }
 
     if (!targetRequired || targetRequired.length === 0) {

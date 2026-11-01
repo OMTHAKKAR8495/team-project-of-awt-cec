@@ -83,7 +83,7 @@ export const deleteJobHandler = async (
     res.status(200).json({
       success: true,
       message: 'Job deleted successfully.',
-      data: { id: deletedJob._id, title: deletedJob.title },
+      data: { id: (deletedJob as any)._id || (deletedJob as any).id, title: (deletedJob as any).title },
     });
   } catch (error) {
     next(error);

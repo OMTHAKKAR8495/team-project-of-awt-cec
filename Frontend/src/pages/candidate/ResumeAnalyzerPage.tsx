@@ -171,6 +171,14 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
 
       if (mode === 'job') {
         formData.append('jobId', selectedJobId);
+        const currentTargetJob = availableJobs.find(j => j._id === selectedJobId);
+        if (currentTargetJob) {
+          formData.append('jobTitle', currentTargetJob.title);
+          formData.append('requiredSkills', JSON.stringify(currentTargetJob.requiredSkills));
+          if (currentTargetJob.preferredSkills && currentTargetJob.preferredSkills.length > 0) {
+            formData.append('preferredSkills', JSON.stringify(currentTargetJob.preferredSkills));
+          }
+        }
       } else if (mode === 'custom') {
         formData.append('jobTitle', customJobTitle.trim() || 'Custom Job Position');
         const reqSkills = customRequiredSkills

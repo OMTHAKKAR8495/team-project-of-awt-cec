@@ -160,7 +160,7 @@ export const deleteCandidateHandler = async (
     res.status(200).json({
       success: true,
       message: 'Candidate application record deleted successfully.',
-      data: { id: deleted._id },
+      data: { id: (deleted as any)._id || (deleted as any).id },
     });
   } catch (error) {
     next(error);

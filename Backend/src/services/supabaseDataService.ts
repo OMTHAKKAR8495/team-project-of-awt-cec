@@ -9,8 +9,6 @@ import {
   RawSupabaseCandidate,
   formatSupabaseJob,
   formatSupabaseCandidate,
-  isSupabaseConfigured,
-  isSupabaseReady,
 } from '../config/supabase';
 import { JobStatus, EmploymentType } from '../models/Job';
 import { ApplicationStatus } from '../models/Candidate';

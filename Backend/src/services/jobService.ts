@@ -1,4 +1,5 @@
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, default as mongoose } from 'mongoose';
+import { BACKEND_FALLBACK_JOBS } from '../utils/fallbackJobs';
 import { Job, IJob, IJobDocument, JobStatus, EmploymentType } from '../models/Job';
 import { Candidate } from '../models/Candidate';
 import { AppError } from '../middleware/error.middleware';
@@ -100,8 +101,21 @@ export const getJobById = async (id: string): Promise<IJobDocument | ReturnType<
   if (isSupabaseReady()) {
     return getJobByIdFromSupabase(id) as unknown as IJobDocument;
   }
+
+  // If MongoDB is not connected in local development, avoid 10s buffering timeout
+  if (mongoose.connection.readyState !== 1) {
+    const fallback = BACKEND_FALLBACK_JOBS.find(j => j._id === id || String(j._id) === String(id));
+    if (fallback) {
+      return fallback as unknown as IJobDocument;
+    }
+    throw new AppError(`Job with ID '${id}' was not found in offline catalog.`, 404);
+  }
   const job = await Job.findById(id).exec();
   if (!job) {
+    const fallback = BACKEND_FALLBACK_JOBS.find(j => j._id === id || String(j._id) === String(id));
+    if (fallback) {
+      return fallback as unknown as IJobDocument;
+    }
     throw new AppError(`Job with ID '${id}' was not found.`, 404);
   }
   return job;
