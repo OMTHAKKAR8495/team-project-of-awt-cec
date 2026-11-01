@@ -476,8 +476,12 @@ export const calculateGeneralResumeScore = (
   // 2. Completeness & Contact Channels (Max 20 pts)
   let completenessScore = 0;
   const hasEmail = /[\w.+-]+@[\w-]+\.[\w.-]+/i.test(resumeText);
-  const hasPhone = /(?:\+?\d{1,3}[-.\s]?)?(?:\(?\d{2,4}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}/.test(resumeText);
-  const hasLinks = /(?:github\.com|linkedin\.com|gitlab\.com|leetcode\.com|portfolio|behance\.net|dribbble\.com|https?:\/\/)/i.test(resumeText);
+  const phoneCandidates = resumeText.match(/(?:\+?\d{1,4}[-.\s()]*)?(?:\(?\d{2,4}\)?[-.\s()]*)?\d{3,4}[-.\s()]*\d{3,4}[-.\s()]*\d{0,4}/g) || [];
+  const hasPhone = phoneCandidates.some(m => {
+    const digits = m.replace(/\D/g, '');
+    return digits.length >= 10 && digits.length <= 15;
+  });
+  const hasLinks = /(?:https?:\/\/|www\.|github\.com|linkedin\.com|gitlab\.com|leetcode\.com|behance\.net|dribbble\.com)/i.test(resumeText);
 
   if (hasEmail) completenessScore += 7;
   if (hasPhone) completenessScore += 6;
@@ -516,7 +520,7 @@ export const calculateGeneralResumeScore = (
   else if (actionVerbsCount >= 1) verbsScore = 4;
 
   // Quantifiable metrics: percentages (%), multipliers (x), currency ($), large numbers (e.g. 10k, 50+)
-  const metricMatches = resumeText.match(/\b\d+(?:\.\d+)?%\b|\$\d+(?:,\d+)*(?:\.\d+)?|\b\d+x\b|\b\d+(?:,\d+)*\+\s*(?:users|clients|requests|ms|qps|tb|gb|records|downloads|stars|commits)\b/gi) || [];
+  const metricMatches = resumeText.match(/\b\d+(?:\.\d+)?%|\$\d+(?:,\d+)*(?:\.\d+)?(?:[kmbt]\b)?|\b\d+(?:\.\d+)?x\b|\b\d+(?:,\d+)*(?:\.\d+)?\s*[kmbt]\+?\b|\b\d+(?:,\d+)*(?:\.\d+)?(?:[kmbt])?\+\s*(?:[a-z]+\s+){0,2}(?:users|clients|requests|ms|qps|tb|gb|records|downloads|stars|commits)\b/gi) || [];
   const quantifiableMetricsCount = metricMatches.length;
 
   let metricsScore = 2;
