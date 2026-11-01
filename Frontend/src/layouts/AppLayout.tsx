@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { fetchHealthStatus, HealthCheckResponse, getJobs } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Job } from '../types/job';
 
 interface NavItem {
@@ -42,7 +43,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [isHealthLoading, setIsHealthLoading] = useState(true);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode, toggleTheme } = useTheme();
   const [regionModalOpen, setRegionModalOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState('US');
 
@@ -250,7 +251,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               {/* Theme Toggle Button */}
               <button
                 type="button"
-                onClick={() => setIsDarkMode(!isDarkMode)}
+                onClick={toggleTheme}
                 className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 flex items-center justify-center transition-colors cursor-pointer"
                 title="Toggle Visual Theme"
                 aria-label="Toggle Theme"
