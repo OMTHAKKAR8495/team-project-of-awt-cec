@@ -44,8 +44,10 @@ export interface JobQueryParams {
   page?: number;
   limit?: number;
   search?: string;
+  division?: string;
   status?: JobStatus;
   employmentType?: EmploymentType;
+  location?: string;
 }
 
 export interface PaginationMeta {

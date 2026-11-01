@@ -394,6 +394,49 @@ export const FALLBACK_CANDIDATES: Candidate[] = [
   },
 ];
 
+export const matchesDivision = (job: Job, division: string): boolean => {
+  if (!division || division === 'all') return true;
+  const title = job.title.toLowerCase();
+  const company = job.company.toLowerCase();
+  const desc = job.description.toLowerCase();
+  const fullText = `${title} ${company} ${desc}`;
+
+  switch (division) {
+    case 'software': {
+      // Exclude renewable energy & grid engineering
+      if (title.includes('renewable') || fullText.includes('renewable grid') || fullText.includes('power grid')) {
+        return false;
+      }
+      // Explicitly include Software, AI Research Scientist, and Cloud Infrastructure Architect
+      return (
+        title.includes('software') ||
+        title.includes('full stack') ||
+        title.includes('frontend') ||
+        title.includes('ai & machine learning') ||
+        title.includes('research scientist') ||
+        title.includes('cloud infrastructure') ||
+        title.includes('devops') ||
+        title.includes('architect') ||
+        title.includes('designer') ||
+        title.includes('ux/ui') ||
+        title.includes('developer')
+      );
+    }
+    case 'engineering':
+      return title.includes('grid') || title.includes('energy') || fullText.includes('renewable');
+    case 'finance':
+      return title.includes('finance') || title.includes('risk') || title.includes('capital');
+    case 'health':
+      return title.includes('bio') || title.includes('health') || title.includes('genomics');
+    case 'communications':
+      return title.includes('brand') || title.includes('communications') || title.includes('pr');
+    case 'talent':
+      return title.includes('talent') || title.includes('recruiting') || title.includes('people');
+    default:
+      return true;
+  }
+};
+
 export function filterFallbackJobs(params?: JobQueryParams) {
   let list = [...FALLBACK_JOBS];
 
@@ -408,6 +451,10 @@ export function filterFallbackJobs(params?: JobQueryParams) {
         j.requiredSkills.some(s => s.toLowerCase().includes(q)) ||
         (j.preferredSkills && j.preferredSkills.some(s => s.toLowerCase().includes(q)))
     );
+  }
+
+  if (params?.division && params.division !== 'all') {
+    list = list.filter(j => matchesDivision(j, params.division!));
   }
 
   if (params?.status) {

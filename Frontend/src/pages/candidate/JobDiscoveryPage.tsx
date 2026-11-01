@@ -32,13 +32,13 @@ export const JobDiscoveryPage: React.FC = () => {
   const [selectedJobForApply, setSelectedJobForApply] = useState<Job | null>(null);
 
   const divisionCategories = [
-    { id: 'all', label: 'All Disciplines', query: '' },
-    { id: 'software', label: 'Software, Cloud & AI', query: 'Engineer' },
-    { id: 'engineering', label: 'Engineering & Grid', query: 'Grid' },
-    { id: 'finance', label: 'Global Finance & Risk', query: 'Finance' },
-    { id: 'health', label: 'Healthcare & Bio', query: 'Bio' },
-    { id: 'communications', label: 'Brand & Communications', query: 'Communications' },
-    { id: 'talent', label: 'HR & Talent Acquisition', query: 'Talent' },
+    { id: 'all', label: 'All Disciplines' },
+    { id: 'software', label: 'Software, Cloud & AI' },
+    { id: 'engineering', label: 'Engineering & Grid' },
+    { id: 'finance', label: 'Global Finance & Risk' },
+    { id: 'health', label: 'Healthcare & Bio' },
+    { id: 'communications', label: 'Brand & Communications' },
+    { id: 'talent', label: 'HR & Talent Acquisition' },
   ];
 
   // Debounce search input
@@ -55,18 +55,11 @@ export const JobDiscoveryPage: React.FC = () => {
       setError(null);
 
       try {
-        let searchQuery = debouncedSearch.trim() || undefined;
-        if (selectedDivision !== 'all') {
-          const divMatch = divisionCategories.find(d => d.id === selectedDivision);
-          if (divMatch?.query) {
-            searchQuery = searchQuery ? `${searchQuery} ${divMatch.query}` : divMatch.query;
-          }
-        }
-
         const queryParams = {
           page: pageToLoad,
           limit: 9,
-          search: searchQuery,
+          search: debouncedSearch.trim() || undefined,
+          division: selectedDivision !== 'all' ? selectedDivision : undefined,
           employmentType: employmentType || undefined,
           status: status || undefined,
         };
