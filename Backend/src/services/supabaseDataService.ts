@@ -16,6 +16,13 @@ import { JobStatus, EmploymentType } from '../models/Job';
 import { ApplicationStatus } from '../models/Candidate';
 import { AppError } from '../middleware/error.middleware';
 
+/**
+ * Encodes URL parameter components used in Supabase REST queries.
+ */
+export function encodeFilterValue(val: string): string {
+  return encodeURIComponent(String(val).trim());
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // JOBS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -69,7 +76,7 @@ export async function getJobsFromSupabase(params: SupabaseJobFilterParams = {}) 
 }
 
 export async function getJobByIdFromSupabase(id: string) {
-  const rows = await supabaseRequest<RawSupabaseJob[]>(`/jobs?id=eq.${id}&select=*`);
+  const rows = await supabaseRequest<RawSupabaseJob[]>(`/jobs?id=eq.${encodeFilterValue(id)}&select=*`);
   if (!rows || rows.length === 0) {
     throw new AppError(`Job with ID '${id}' was not found.`, 404);
   }
@@ -149,7 +156,7 @@ export async function updateJobInSupabase(
   }
   if (jobData.status) payload.status = jobData.status;
 
-  const rows = await supabaseRequest<RawSupabaseJob[]>(`/jobs?id=eq.${id}`, {
+  const rows = await supabaseRequest<RawSupabaseJob[]>(`/jobs?id=eq.${encodeFilterValue(id)}`, {
     method: 'PATCH',
     body: payload,
     headers: {
@@ -165,9 +172,27 @@ export async function updateJobInSupabase(
 }
 
 export async function deleteJobFromSupabase(id: string) {
-  await supabaseRequest(`/jobs?id=eq.${id}`, {
+  const encodedId = encodeFilterValue(id);
+  // Ensure candidates for this job are deleted (equivalently to MongoDB cascade deletion)
+  try {
+    await supabaseRequest(`/candidates?job_id=eq.${encodedId}`, {
+      method: 'DELETE',
+    });
+  } catch {
+    // If foreign-key ON DELETE CASCADE already removes them, this is safe
+  }
+
+  const rows = await supabaseRequest<RawSupabaseJob[]>(`/jobs?id=eq.${encodedId}`, {
     method: 'DELETE',
+    headers: {
+      Prefer: 'return=representation',
+    },
   });
+
+  if (!rows || rows.length === 0) {
+    throw new AppError(`Job with ID '${id}' was not found.`, 404);
+  }
+
   return { id };
 }
 
@@ -186,7 +211,7 @@ export async function getCandidatesFromSupabase(params: SupabaseCandidateFilterP
   const queryParts: string[] = ['select=*', 'order=created_at.desc'];
 
   if (params.jobId) {
-    queryParts.push(`job_id=eq.${params.jobId}`);
+    queryParts.push(`job_id=eq.${encodeFilterValue(params.jobId)}`);
   }
   if (params.status) {
     queryParts.push(`application_status=eq.${params.status}`);
@@ -201,7 +226,7 @@ export async function getCandidatesFromSupabase(params: SupabaseCandidateFilterP
   if (jobIds.length > 0) {
     try {
       const jobs = await supabaseRequest<RawSupabaseJob[]>(
-        `/jobs?id=in.(${jobIds.join(',')})&select=*`
+        `/jobs?id=in.(${jobIds.map(encodeFilterValue).join(',')})&select=*`
       );
       for (const j of jobs) {
         jobMap.set(j.id, j);
@@ -227,20 +252,28 @@ export async function getCandidatesFromSupabase(params: SupabaseCandidateFilterP
 }
 
 export async function getCandidateByIdFromSupabase(id: string) {
-  const rows = await supabaseRequest<RawSupabaseCandidate[]>(`/candidates?id=eq.${id}&select=*`);
+  const rows = await supabaseRequest<RawSupabaseCandidate[]>(`/candidates?id=eq.${encodeFilterValue(id)}&select=*`);
   if (!rows || rows.length === 0) {
     throw new AppError(`Candidate with ID '${id}' was not found.`, 404);
   }
 
   let jobRow: RawSupabaseJob | null = null;
   try {
-    const jobs = await supabaseRequest<RawSupabaseJob[]>(`/jobs?id=eq.${rows[0].job_id}&select=*`);
+    const jobs = await supabaseRequest<RawSupabaseJob[]>(`/jobs?id=eq.${encodeFilterValue(rows[0].job_id)}&select=*`);
     if (jobs && jobs.length > 0) jobRow = jobs[0];
   } catch {
     // safe fallback
   }
 
   return formatSupabaseCandidate(rows[0], jobRow);
+}
+
+export async function findCandidateByJobAndEmailInSupabase(jobId: string, email: string) {
+  const rows = await supabaseRequest<RawSupabaseCandidate[]>(
+    `/candidates?job_id=eq.${encodeFilterValue(jobId)}&email=eq.${encodeFilterValue(email.toLowerCase().trim())}&select=*`
+  );
+  if (!rows || rows.length === 0) return null;
+  return formatSupabaseCandidate(rows[0]);
 }
 
 export async function createCandidateInSupabase(candidateData: {
@@ -286,7 +319,54 @@ export async function createCandidateInSupabase(candidateData: {
 
   let jobRow: RawSupabaseJob | null = null;
   try {
-    const jobs = await supabaseRequest<RawSupabaseJob[]>(`/jobs?id=eq.${candidateData.jobId}&select=*`);
+    const jobs = await supabaseRequest<RawSupabaseJob[]>(`/jobs?id=eq.${encodeFilterValue(candidateData.jobId)}&select=*`);
+    if (jobs && jobs.length > 0) jobRow = jobs[0];
+  } catch {
+    // safe fallback
+  }
+
+  return formatSupabaseCandidate(rows[0], jobRow);
+}
+
+export async function updateCandidateInSupabase(
+  id: string,
+  updateData: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    notes?: string;
+    status?: ApplicationStatus;
+    applicationStatus?: ApplicationStatus;
+  }
+) {
+  const payload: Record<string, unknown> = {};
+  if (updateData.name !== undefined) payload.name = updateData.name;
+  if (updateData.email !== undefined) payload.email = updateData.email.toLowerCase().trim();
+  if (updateData.phone !== undefined) payload.phone = updateData.phone;
+  if (updateData.notes !== undefined) payload.notes = updateData.notes;
+  const status = updateData.applicationStatus || updateData.status;
+  if (status !== undefined) payload.application_status = status;
+
+  const rows = await supabaseRequest<RawSupabaseCandidate[]>(
+    `/candidates?id=eq.${encodeFilterValue(id)}`,
+    {
+      method: 'PATCH',
+      body: payload,
+      headers: {
+        Prefer: 'return=representation',
+      },
+    }
+  );
+
+  if (!rows || rows.length === 0) {
+    throw new AppError(`Candidate with ID '${id}' was not found.`, 404);
+  }
+
+  let jobRow: RawSupabaseJob | null = null;
+  try {
+    const jobs = await supabaseRequest<RawSupabaseJob[]>(
+      `/jobs?id=eq.${encodeFilterValue(rows[0].job_id)}&select=*`
+    );
     if (jobs && jobs.length > 0) jobRow = jobs[0];
   } catch {
     // safe fallback
@@ -296,41 +376,28 @@ export async function createCandidateInSupabase(candidateData: {
 }
 
 export async function updateCandidateStatusInSupabase(id: string, status: ApplicationStatus) {
-  const rows = await supabaseRequest<RawSupabaseCandidate[]>(`/candidates?id=eq.${id}`, {
-    method: 'PATCH',
-    body: { application_status: status },
-    headers: {
-      Prefer: 'return=representation',
-    },
-  });
-
-  if (!rows || rows.length === 0) {
-    throw new AppError(`Candidate with ID '${id}' was not found.`, 404);
-  }
-
-  return formatSupabaseCandidate(rows[0]);
+  return updateCandidateInSupabase(id, { applicationStatus: status });
 }
 
 export async function updateCandidateNotesInSupabase(id: string, notes: string) {
-  const rows = await supabaseRequest<RawSupabaseCandidate[]>(`/candidates?id=eq.${id}`, {
-    method: 'PATCH',
-    body: { notes },
-    headers: {
-      Prefer: 'return=representation',
-    },
-  });
+  return updateCandidateInSupabase(id, { notes });
+}
+
+export async function deleteCandidateFromSupabase(id: string) {
+  const rows = await supabaseRequest<RawSupabaseCandidate[]>(
+    `/candidates?id=eq.${encodeFilterValue(id)}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Prefer: 'return=representation',
+      },
+    }
+  );
 
   if (!rows || rows.length === 0) {
     throw new AppError(`Candidate with ID '${id}' was not found.`, 404);
   }
 
-  return formatSupabaseCandidate(rows[0]);
-}
-
-export async function deleteCandidateFromSupabase(id: string) {
-  await supabaseRequest(`/candidates?id=eq.${id}`, {
-    method: 'DELETE',
-  });
   return { id };
 }
 
@@ -350,7 +417,7 @@ export interface RawSupabaseUser {
 
 export async function findUserByEmailInSupabase(email: string) {
   const rows = await supabaseRequest<RawSupabaseUser[]>(
-    `/users?email=eq.${encodeURIComponent(email.toLowerCase().trim())}&select=*`
+    `/users?email=eq.${encodeFilterValue(email.toLowerCase())}&select=*`
   );
   if (!rows || rows.length === 0) return null;
   return rows[0];
