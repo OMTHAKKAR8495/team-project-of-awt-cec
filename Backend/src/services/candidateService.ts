@@ -7,10 +7,12 @@ import {
   getCandidatesFromSupabase,
   getCandidateByIdFromSupabase,
   createCandidateInSupabase,
+  updateCandidateInSupabase,
   updateCandidateStatusInSupabase,
   updateCandidateNotesInSupabase,
   deleteCandidateFromSupabase,
   getJobByIdFromSupabase,
+  findCandidateByJobAndEmailInSupabase,
 } from './supabaseDataService';
 import {
   extractResumeText,
@@ -51,11 +53,8 @@ export const applyCandidate = async (dto: ApplyCandidateDTO): Promise<ICandidate
 
   try {
     if (isSupabaseReady()) {
-      // 1. Verify Job existence in Supabase
+      // 1. Verify Job existence in Supabase (throws 404 if not found)
       const job = await getJobByIdFromSupabase(jobId);
-      if (!job) {
-        throw new AppError(`Job with ID '${jobId}' does not exist.`, 404);
-      }
       if (job.status !== 'open') {
         throw new AppError(
           `Job '${job.title}' is currently closed. Applications cannot be accepted.`,
@@ -63,13 +62,23 @@ export const applyCandidate = async (dto: ApplyCandidateDTO): Promise<ICandidate
         );
       }
 
-      // 2. Extract text from uploaded resume
+      // 2. Prevent duplicate application for the same job with the same normalized email
+      const normalizedEmail = email.toLowerCase().trim();
+      const existing = await findCandidateByJobAndEmailInSupabase(jobId, normalizedEmail);
+      if (existing) {
+        throw new AppError(
+          `Candidate with email '${email}' has already submitted an application for this job.`,
+          409
+        );
+      }
+
+      // 3. Extract text from uploaded resume
       const rawText = await extractResumeText(file.path, file.mimetype);
 
-      // 3. Extract skills from resume
+      // 4. Extract skills from resume
       const extractedSkills = extractSkillsFromText(rawText);
 
-      // 4. Calculate ATS match score against Job requirements
+      // 5. Calculate ATS match score against Job requirements
       const atsResult = calculateATSScore(
         rawText,
         extractedSkills,
@@ -78,10 +87,10 @@ export const applyCandidate = async (dto: ApplyCandidateDTO): Promise<ICandidate
         job.requirements || []
       );
 
-      // 5. Store Candidate directly into Supabase
+      // 6. Store Candidate directly into Supabase
       const savedCandidate = await createCandidateInSupabase({
         name,
-        email: email.toLowerCase(),
+        email: normalizedEmail,
         phone,
         jobId,
         notes,
@@ -316,13 +325,8 @@ export const updateCandidate = async (
   updateData: UpdateCandidateDTO
 ): Promise<ICandidateDocument | ReturnType<typeof import('../config/supabase').formatSupabaseCandidate>> => {
   if (isSupabaseReady()) {
-    if (updateData.status || updateData.applicationStatus) {
-      await updateCandidateStatusInSupabase(id, (updateData.applicationStatus || updateData.status)!);
-    }
-    if (updateData.notes !== undefined) {
-      await updateCandidateNotesInSupabase(id, updateData.notes);
-    }
-    return getCandidateByIdFromSupabase(id) as unknown as ICandidateDocument;
+    const updated = await updateCandidateInSupabase(id, updateData);
+    return updated as unknown as ICandidateDocument;
   }
 
   const updates: Record<string, unknown> = {};
