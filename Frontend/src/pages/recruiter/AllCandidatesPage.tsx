@@ -142,10 +142,10 @@ export const AllCandidatesPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Candidate Talent Pool
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
             Search, filter, and review candidate applications across all posted positions.
           </p>
         </div>
@@ -183,15 +183,15 @@ export const AllCandidatesPage: React.FC = () => {
       )}
 
       {/* Filter Bar */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-4">
+      <div className="bg-white dark:bg-[#0d122e]/90 rounded-xl border border-slate-200/90 dark:border-indigo-500/20 p-4 shadow-xs space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-4">
         <div className="flex-1">
-          <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+          <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
             Filter by Position
           </label>
           <select
             value={selectedJobFilter}
             onChange={e => setSelectedJobFilter(e.target.value)}
-            className="w-full py-2 px-3 text-xs sm:text-sm rounded-lg border border-slate-200 bg-white text-slate-800 focus:border-indigo-500 focus:outline-none cursor-pointer"
+            className="w-full py-2 px-3 text-xs sm:text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:outline-none cursor-pointer"
           >
             <option value="">All Posted Positions</option>
             {availableJobs.map(j => (
@@ -203,13 +203,13 @@ export const AllCandidatesPage: React.FC = () => {
         </div>
 
         <div className="w-full sm:w-56">
-          <label className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+          <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
             Filter by Status
           </label>
           <select
             value={selectedStatusFilter}
             onChange={e => setSelectedStatusFilter(e.target.value as ApplicationStatus | '')}
-            className="w-full py-2 px-3 text-xs sm:text-sm rounded-lg border border-slate-200 bg-white text-slate-800 focus:border-indigo-500 focus:outline-none cursor-pointer"
+            className="w-full py-2 px-3 text-xs sm:text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:outline-none cursor-pointer"
           >
             <option value="">All Application Statuses</option>
             <option value="pending">Pending</option>
@@ -250,7 +250,7 @@ export const AllCandidatesPage: React.FC = () => {
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/60 text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
                   <th className="px-6 py-3.5">Candidate</th>
                   <th className="px-6 py-3.5">Position Applied</th>
                   <th className="px-6 py-3.5 text-center">ATS Score</th>
@@ -259,25 +259,25 @@ export const AllCandidatesPage: React.FC = () => {
                   <th className="px-6 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                 {candidates.map(cand => (
                   <tr
                     key={cand._id}
-                    className="hover:bg-slate-50/70 transition-colors cursor-pointer"
+                    className="hover:bg-slate-50/70 dark:hover:bg-white/5 transition-colors cursor-pointer"
                     onClick={() => handleOpenModal(cand)}
                   >
                     {/* Name & Contact */}
                     <td className="px-6 py-4">
-                      <div className="font-bold text-slate-900 text-sm">{cand.name}</div>
-                      <div className="text-slate-500 text-xs mt-0.5">{cand.email}</div>
+                      <div className="font-bold text-slate-900 dark:text-white text-sm">{cand.name}</div>
+                      <div className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{cand.email}</div>
                     </td>
 
                     {/* Job */}
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-800">
+                      <div className="font-semibold text-slate-800 dark:text-slate-200">
                         {typeof cand.job === 'object' ? cand.job.title : 'Position'}
                       </div>
-                      <div className="text-slate-500 flex items-center gap-1 mt-0.5">
+                      <div className="text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
                         <Building2 className="w-3.5 h-3.5 text-slate-400" />
                         <span>{typeof cand.job === 'object' ? cand.job.company : 'Company'}</span>
                       </div>
@@ -296,7 +296,7 @@ export const AllCandidatesPage: React.FC = () => {
                     </td>
 
                     {/* Date */}
-                    <td className="px-6 py-4 text-slate-500">
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400">
                       {new Date(cand.createdAt).toLocaleDateString()}
                     </td>
 
@@ -317,18 +317,18 @@ export const AllCandidatesPage: React.FC = () => {
           </div>
 
           {/* Mobile Card List View */}
-          <div className="md:hidden divide-y divide-slate-100">
+          <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
             {candidates.map(cand => (
               <div
                 key={cand._id}
                 onClick={() => handleOpenModal(cand)}
-                className="p-4 space-y-2 cursor-pointer hover:bg-slate-50/70"
+                className="p-4 space-y-2 cursor-pointer hover:bg-slate-50/70 dark:hover:bg-white/5"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="font-bold text-slate-900 text-sm">{cand.name}</h3>
-                    <div className="text-xs text-slate-500">{cand.email}</div>
-                    <div className="text-xs text-indigo-600 font-medium mt-1">
+                    <h3 className="font-bold text-slate-900 dark:text-white text-sm">{cand.name}</h3>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">{cand.email}</div>
+                    <div className="text-xs text-indigo-600 dark:text-cyan-400 font-medium mt-1">
                       {typeof cand.job === 'object' ? cand.job.title : 'Job'}
                     </div>
                   </div>
@@ -385,17 +385,17 @@ export const AllCandidatesPage: React.FC = () => {
             )}
 
             {/* Position and ATS Score Banner */}
-            <div className="p-5 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-5">
+            <div className="p-5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-5">
               <div className="space-y-1 text-center sm:text-left">
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   Target Position
                 </span>
-                <h4 className="text-base font-bold text-slate-900">
+                <h4 className="text-base font-bold text-slate-900 dark:text-white">
                   {typeof selectedCandidate.job === 'object'
                     ? `${selectedCandidate.job.title} at ${selectedCandidate.job.company}`
                     : 'Job Application'}
                 </h4>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-600 dark:text-slate-400">
                   Applied on {new Date(selectedCandidate.createdAt).toLocaleString()}
                 </p>
               </div>
@@ -403,8 +403,8 @@ export const AllCandidatesPage: React.FC = () => {
             </div>
 
             {/* Status Change Buttons */}
-            <div className="p-4 bg-indigo-50/40 rounded-xl border border-indigo-100 space-y-2">
-              <span className="text-xs font-bold text-slate-800 block">
+            <div className="p-4 bg-indigo-50/40 dark:bg-indigo-950/40 rounded-xl border border-indigo-100 dark:border-indigo-800/40 space-y-2">
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
                 Update Application Status:
               </span>
               <div className="flex flex-wrap gap-2">
@@ -444,8 +444,8 @@ export const AllCandidatesPage: React.FC = () => {
             </div>
 
             {/* Resume Metadata Notice */}
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-2">
-              <div className="flex items-center gap-2 font-semibold text-slate-800">
+            <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 text-xs space-y-2">
+              <div className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-200">
                 <FileText className="w-4 h-4 text-slate-500" />
                 <span>Resume Document: {selectedCandidate.resume.originalName}</span>
               </div>

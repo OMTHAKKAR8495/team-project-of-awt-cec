@@ -77,14 +77,14 @@ export const RecruiterDashboardPage: React.FC = () => {
       {/* Top Banner / Welcome */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-950/70 text-purple-300 border border-purple-500/40">
-            <Layers className="w-3.5 h-3.5 text-purple-400" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 dark:bg-purple-950/70 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-500/40">
+            <Layers className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
             <span>Recruiter Operations Console</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Recruitment Command Dashboard
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
             Real-time pipeline metrics, ATS qualification distributions, and applicant screening workflows.
           </p>
         </div>
@@ -136,7 +136,7 @@ export const RecruiterDashboardPage: React.FC = () => {
                   <Briefcase className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-black text-slate-900">{totalJobs}</div>
+              <div className="text-2xl font-black text-slate-900 dark:text-white">{totalJobs}</div>
               <div className="flex items-center gap-2 text-xs text-slate-500">
                 <span className="text-emerald-600 font-semibold">{openJobsCount} Open</span>
                 <span>•</span>
@@ -152,7 +152,7 @@ export const RecruiterDashboardPage: React.FC = () => {
                   <Users className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-black text-slate-900">{totalCandidates}</div>
+              <div className="text-2xl font-black text-slate-900 dark:text-white">{totalCandidates}</div>
               <div className="text-xs text-slate-500">
                 Across all registered postings
               </div>
@@ -182,7 +182,7 @@ export const RecruiterDashboardPage: React.FC = () => {
                   <Award className="w-4 h-4" />
                 </div>
               </div>
-              <div className="text-2xl font-black text-slate-900">{shortlistedCount}</div>
+              <div className="text-2xl font-black text-slate-900 dark:text-white">{shortlistedCount}</div>
               <div className="text-xs text-slate-500">
                 Status: Shortlisted or Hired
               </div>
@@ -196,7 +196,7 @@ export const RecruiterDashboardPage: React.FC = () => {
         {/* Recent Job Postings */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
               <Briefcase className="w-4 h-4 text-indigo-600" />
               <span>Recent Job Postings</span>
             </h2>
@@ -268,7 +268,7 @@ export const RecruiterDashboardPage: React.FC = () => {
         {/* Recent Applications Pipeline */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
               <Users className="w-4 h-4 text-purple-600" />
               <span>Recent Applicant Activity</span>
             </h2>
@@ -304,7 +304,7 @@ export const RecruiterDashboardPage: React.FC = () => {
                 >
                   <div className="min-w-0 space-y-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-bold text-slate-900 truncate">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
                         {candidate.name}
                       </h3>
                       <ApplicationStatusBadge

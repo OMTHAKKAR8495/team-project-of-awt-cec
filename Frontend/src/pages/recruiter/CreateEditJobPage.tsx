@@ -256,7 +256,7 @@ export const CreateEditJobPage: React.FC = () => {
       {/* Back button */}
       <Link
         to="/recruiter/jobs"
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Job Management
