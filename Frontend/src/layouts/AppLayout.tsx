@@ -16,6 +16,7 @@ import {
   Phone,
   MapPin,
   CheckCircle2,
+  LogOut,
 } from 'lucide-react';
 import { fetchHealthStatus, HealthCheckResponse, getJobs } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -103,7 +104,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   // Candidate Navigation items matching Reference Screenshot 1
   const navItems: NavItem[] = [
     { to: '/', label: 'Home' },
-    { to: '/about', label: 'About Us' },
+    { to: '/about', label: 'About' },
     { to: '/divisions', label: 'Divisions' },
     { to: '/careers', label: 'Careers', badge: 'HIRING', badgeColor: 'bg-amber-400 text-slate-950 font-bold' },
     { to: '/analyze-resume', label: 'Resume Analyzer', badge: 'AI', badgeColor: 'bg-cyan-400/90 text-slate-950 font-bold' },
@@ -145,7 +146,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#070913] dark:text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white transition-colors duration-200">
       {/* 1. TOP ANNOUNCEMENT BAR (From Screenshot 1) */}
       <div className="bg-indigo-50/80 dark:bg-[#0b0f24] border-b border-indigo-100 dark:border-indigo-900/30 text-xs py-2 px-4 sm:px-6 transition-colors">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+        <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 overflow-hidden text-ellipsis whitespace-nowrap">
             <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0">
               NEXUS AI 2026
@@ -175,13 +176,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </div>
       )}
 
-      {/* 2. MAIN NAVBAR (From Screenshot 1) */}
+      {/* 2. MAIN NAVBAR */}
       <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#070913]/90 backdrop-blur-md border-b border-slate-200 dark:border-white/5 transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20 gap-3 xl:gap-4">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform shrink-0">
                 <Building2 className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -200,14 +201,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden xl:flex items-center gap-1">
+            <nav className="hidden xl:flex items-center gap-0.5 2xl:gap-1">
               {(isRecruiterPath ? recruiterLinks : navItems).map(item => (
                 <NavLink
                   key={item.to}
                   to={item.to}
                   end={item.to === '/'}
                   className={({ isActive }) =>
-                    `relative px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 flex items-center gap-1.5 ${
+                    `relative px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap ${
                       isActive
                         ? 'bg-indigo-50 dark:bg-indigo-600/30 text-indigo-600 dark:text-white border border-indigo-200 dark:border-indigo-500/50 shadow-xs font-semibold'
                         : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
@@ -225,23 +226,23 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             </nav>
 
             {/* Right Action Icons & Controls */}
-            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               {/* Search Icon */}
               <button
                 type="button"
                 onClick={() => setSearchModalOpen(true)}
-                className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-300 dark:hover:text-white dark:border-white/10 flex items-center justify-center transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-300 dark:hover:text-white dark:border-white/10 flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 title="Search Positions & Intelligence"
                 aria-label="Search"
               >
                 <Search className="w-4 h-4" />
               </button>
 
-              {/* Region Selector */}
+              {/* Region Selector (shown on 2xl+ to keep navbar clean) */}
               <button
                 type="button"
                 onClick={() => setRegionModalOpen(!regionModalOpen)}
-                className="hidden sm:flex items-center gap-1 px-2.5 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-300 dark:hover:text-white dark:border-white/10 text-xs font-medium transition-colors cursor-pointer"
+                className="hidden 2xl:flex items-center gap-1 px-2.5 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-300 dark:hover:text-white dark:border-white/10 text-xs font-medium transition-colors cursor-pointer shrink-0"
                 title="Global Region Selector"
               >
                 <Globe className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
@@ -252,43 +253,41 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-300 dark:hover:text-white dark:border-white/10 flex items-center justify-center transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-300 dark:hover:text-white dark:border-white/10 flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 title={isDarkMode ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
                 aria-label="Toggle Theme"
               >
                 {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
               </button>
 
-              {/* Analyze CV CTA Button (from Screenshot 1) */}
-              <Link
-                to="/analyze-resume"
-                className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 shadow-md shadow-indigo-600/30 transition-all cursor-pointer transform hover:-translate-y-0.5"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-cyan-200" />
-                <span>Analyze CV</span>
-              </Link>
-
-              {/* Authentication Controls */}
+              {/* Authentication Controls: Modern User Chip */}
               {isAuthenticated ? (
-                <div className="flex items-center gap-2">
-                  <span className="hidden md:inline text-xs font-medium text-slate-700 dark:text-slate-300">
-                    {user?.name}
-                    <span className="ml-1 text-[10px] text-cyan-600 dark:text-cyan-400 font-mono">
-                      ({user?.role})
+                <div className="flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white font-bold text-[10px] flex items-center justify-center shrink-0">
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  <div className="hidden sm:flex flex-col text-left leading-none max-w-[85px] lg:max-w-[105px]">
+                    <span className="text-[11px] font-semibold text-slate-900 dark:text-white truncate">
+                      {user?.name}
                     </span>
-                  </span>
+                    <span className="text-[9px] text-indigo-600 dark:text-cyan-400 capitalize truncate">
+                      {user?.role}
+                    </span>
+                  </div>
                   <button
                     type="button"
                     onClick={() => logout()}
-                    className="text-xs px-2.5 py-1 rounded-lg border border-slate-300 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                    className="p-1 rounded-md text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+                    title="Log Out"
+                    aria-label="Logout"
                   >
-                    Logout
+                    <LogOut className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ) : (
                 <Link
                   to="/login"
-                  className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+                  className="text-xs px-3 py-1.5 rounded-lg font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shrink-0"
                 >
                   Sign In
                 </Link>
@@ -298,18 +297,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <button
                 type="button"
                 onClick={handleToggleMode}
-                className="hidden lg:flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
                 title="Switch between Candidate and Recruiter portal"
               >
-                <ArrowRightLeft className="w-3 h-3" />
-                <span>{isRecruiterPath ? 'Talent Portal' : 'Recruiter Mode'}</span>
+                <ArrowRightLeft className="w-3 h-3 text-indigo-600 dark:text-cyan-400 shrink-0" />
+                <span className="hidden sm:inline">{isRecruiterPath ? 'Talent View' : 'Recruiter Mode'}</span>
+                <span className="sm:hidden">{isRecruiterPath ? 'Talent' : 'Recruiter'}</span>
               </button>
 
               {/* Mobile Menu Button */}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="xl:hidden w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 dark:bg-white/5 dark:text-slate-300 dark:hover:text-white dark:border-white/10 flex items-center justify-center transition-colors cursor-pointer"
+                className="xl:hidden w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 dark:bg-white/5 dark:text-slate-300 dark:hover:text-white dark:border-white/10 flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 aria-label="Toggle Navigation Menu"
               >
                 {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
