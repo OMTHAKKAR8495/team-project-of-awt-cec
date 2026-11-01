@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User, IUserDocument } from '../models/User';
 import { AppError } from '../middleware/error.middleware';
+import { isSupabaseReady } from '../config/supabase';
+import { findUserByEmailInSupabase, createUserInSupabase } from './supabaseDataService';
 
 const BCRYPT_ROUNDS = 10;
 
@@ -49,6 +51,31 @@ export async function register(
   password: string,
   role: 'recruiter' | 'candidate' = 'candidate'
 ): Promise<IUserDocument> {
+  const normEmail = email.trim().toLowerCase();
+
+  if (isSupabaseReady()) {
+    const existing = await findUserByEmailInSupabase(normEmail);
+    if (existing) {
+      throw new AppError('An account with this email already exists.', 409);
+    }
+    const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+    const created = await createUserInSupabase({ name, email: normEmail, passwordHash, role });
+    return {
+      _id: created.id,
+      name: created.name,
+      email: created.email,
+      role: created.role,
+      toJSON() {
+        return {
+          _id: created.id,
+          name: created.name,
+          email: created.email,
+          role: created.role,
+        };
+      },
+    } as unknown as IUserDocument;
+  }
+
   if (mongoose.connection.readyState !== 1) {
     throw new AppError(
       'Database service is unavailable. Please start MongoDB to register new accounts, or sign in using a demo account.',
@@ -56,7 +83,7 @@ export async function register(
     );
   }
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
-  const user = await User.create({ name, email, passwordHash, role });
+  const user = await User.create({ name, email: normEmail, passwordHash, role });
   return user;
 }
 
@@ -99,6 +126,31 @@ export async function login(email: string, password: string): Promise<IUserDocum
           role: demoMatch.role,
           createdAt: now,
           updatedAt: now,
+        };
+      },
+    } as unknown as IUserDocument;
+  }
+
+  if (isSupabaseReady()) {
+    const user = await findUserByEmailInSupabase(normEmail);
+    if (!user) {
+      throw new AppError('Invalid email or password.', 401);
+    }
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) {
+      throw new AppError('Invalid email or password.', 401);
+    }
+    return {
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      toJSON() {
+        return {
+          _id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         };
       },
     } as unknown as IUserDocument;

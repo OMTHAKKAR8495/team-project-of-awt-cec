@@ -2,6 +2,16 @@ import { FilterQuery, Types } from 'mongoose';
 import { Candidate, ICandidateDocument, ApplicationStatus } from '../models/Candidate';
 import { Job } from '../models/Job';
 import { AppError } from '../middleware/error.middleware';
+import { isSupabaseReady } from '../config/supabase';
+import {
+  getCandidatesFromSupabase,
+  getCandidateByIdFromSupabase,
+  createCandidateInSupabase,
+  updateCandidateStatusInSupabase,
+  updateCandidateNotesInSupabase,
+  deleteCandidateFromSupabase,
+  getJobByIdFromSupabase,
+} from './supabaseDataService';
 import {
   extractResumeText,
   extractSkillsFromText,
@@ -26,7 +36,7 @@ export interface CandidateFilterParams {
 }
 
 export interface PaginatedCandidatesResult {
-  candidates: ICandidateDocument[];
+  candidates: (ICandidateDocument | ReturnType<typeof import('../config/supabase').formatSupabaseCandidate>)[];
   total: number;
   page: number;
   limit: number;
@@ -36,11 +46,59 @@ export interface PaginatedCandidatesResult {
 /**
  * Submits a candidate application, parses resume, computes ATS score, and stores record
  */
-export const applyCandidate = async (dto: ApplyCandidateDTO): Promise<ICandidateDocument> => {
+export const applyCandidate = async (dto: ApplyCandidateDTO): Promise<ICandidateDocument | ReturnType<typeof import('../config/supabase').formatSupabaseCandidate>> => {
   const { name, email, phone, jobId, notes, file } = dto;
 
   try {
-    // 1. Verify Job existence and active status
+    if (isSupabaseReady()) {
+      // 1. Verify Job existence in Supabase
+      const job = await getJobByIdFromSupabase(jobId);
+      if (!job) {
+        throw new AppError(`Job with ID '${jobId}' does not exist.`, 404);
+      }
+      if (job.status !== 'open') {
+        throw new AppError(
+          `Job '${job.title}' is currently closed. Applications cannot be accepted.`,
+          400
+        );
+      }
+
+      // 2. Extract text from uploaded resume
+      const rawText = await extractResumeText(file.path, file.mimetype);
+
+      // 3. Extract skills from resume
+      const extractedSkills = extractSkillsFromText(rawText);
+
+      // 4. Calculate ATS match score against Job requirements
+      const atsResult = calculateATSScore(
+        rawText,
+        extractedSkills,
+        job.requiredSkills || [],
+        job.preferredSkills || [],
+        job.requirements || []
+      );
+
+      // 5. Store Candidate directly into Supabase
+      const savedCandidate = await createCandidateInSupabase({
+        name,
+        email: email.toLowerCase(),
+        phone,
+        jobId,
+        notes,
+        resumeOriginalName: file.originalname,
+        resumeFileName: file.filename,
+        resumeFileSize: file.size,
+        resumeMimeType: file.mimetype,
+        extractedSkills,
+        atsScore: atsResult.score,
+        matchedSkills: atsResult.matchedSkills,
+        missingSkills: atsResult.missingSkills,
+      });
+
+      return savedCandidate as unknown as ICandidateDocument;
+    }
+
+    // 1. Verify Job existence and active status in MongoDB
     const job = await Job.findById(jobId).exec();
     if (!job) {
       throw new AppError(`Job with ID '${jobId}' does not exist.`, 404);
@@ -116,6 +174,11 @@ export const applyCandidate = async (dto: ApplyCandidateDTO): Promise<ICandidate
 export const getCandidates = async (
   params: CandidateFilterParams
 ): Promise<PaginatedCandidatesResult> => {
+  if (isSupabaseReady()) {
+    const res = await getCandidatesFromSupabase(params);
+    return res as unknown as PaginatedCandidatesResult;
+  }
+
   const page = Math.max(1, params.page || 1);
   const limit = Math.min(100, Math.max(1, params.limit || 10));
   const skip = (page - 1) * limit;
@@ -152,7 +215,10 @@ export const getCandidates = async (
 /**
  * Retrieves a single candidate application by ID
  */
-export const getCandidateById = async (id: string): Promise<ICandidateDocument> => {
+export const getCandidateById = async (id: string): Promise<ICandidateDocument | ReturnType<typeof import('../config/supabase').formatSupabaseCandidate>> => {
+  if (isSupabaseReady()) {
+    return getCandidateByIdFromSupabase(id) as unknown as ICandidateDocument;
+  }
   const candidate = await Candidate.findById(id)
     .populate('job', 'title company status location requiredSkills')
     .exec();
@@ -172,6 +238,10 @@ export const getCandidatesByJob = async (
   page = 1,
   limit = 20
 ): Promise<PaginatedCandidatesResult> => {
+  if (isSupabaseReady()) {
+    return getCandidates({ jobId, page, limit });
+  }
+
   // Verify job exists
   const jobExists = await Job.exists({ _id: jobId });
   if (!jobExists) {
@@ -187,7 +257,10 @@ export const getCandidatesByJob = async (
 export const updateCandidateStatus = async (
   id: string,
   status: ApplicationStatus
-): Promise<ICandidateDocument> => {
+): Promise<ICandidateDocument | ReturnType<typeof import('../config/supabase').formatSupabaseCandidate>> => {
+  if (isSupabaseReady()) {
+    return updateCandidateStatusInSupabase(id, status) as unknown as ICandidateDocument;
+  }
   const candidate = await Candidate.findByIdAndUpdate(
     id,
     { applicationStatus: status },
@@ -209,7 +282,10 @@ export const updateCandidateStatus = async (
 export const updateCandidateNotes = async (
   id: string,
   notes: string
-): Promise<ICandidateDocument> => {
+): Promise<ICandidateDocument | ReturnType<typeof import('../config/supabase').formatSupabaseCandidate>> => {
+  if (isSupabaseReady()) {
+    return updateCandidateNotesInSupabase(id, notes) as unknown as ICandidateDocument;
+  }
   const candidate = await Candidate.findByIdAndUpdate(
     id,
     { notes },
@@ -238,7 +314,17 @@ export interface UpdateCandidateDTO {
 export const updateCandidate = async (
   id: string,
   updateData: UpdateCandidateDTO
-): Promise<ICandidateDocument> => {
+): Promise<ICandidateDocument | ReturnType<typeof import('../config/supabase').formatSupabaseCandidate>> => {
+  if (isSupabaseReady()) {
+    if (updateData.status || updateData.applicationStatus) {
+      await updateCandidateStatusInSupabase(id, (updateData.applicationStatus || updateData.status)!);
+    }
+    if (updateData.notes !== undefined) {
+      await updateCandidateNotesInSupabase(id, updateData.notes);
+    }
+    return getCandidateByIdFromSupabase(id) as unknown as ICandidateDocument;
+  }
+
   const updates: Record<string, unknown> = {};
   if (updateData.name !== undefined) updates.name = updateData.name;
   if (updateData.email !== undefined) updates.email = updateData.email.toLowerCase();
@@ -264,7 +350,10 @@ export const updateCandidate = async (
 /**
  * Deletes a candidate application record by ID
  */
-export const deleteCandidate = async (id: string): Promise<ICandidateDocument> => {
+export const deleteCandidate = async (id: string): Promise<ICandidateDocument | { id: string }> => {
+  if (isSupabaseReady()) {
+    return deleteCandidateFromSupabase(id);
+  }
   const candidate = await Candidate.findByIdAndDelete(id).exec();
 
   if (!candidate) {
