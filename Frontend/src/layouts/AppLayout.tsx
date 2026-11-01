@@ -151,7 +151,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0">
               NEXUS AI 2026
             </span>
-            <span className="text-slate-600 dark:text-slate-300 text-xs tracking-tight truncate">
+            <span className="text-slate-700 dark:text-slate-300 text-xs font-medium truncate">
               Unified Portal with AI Resume Analyzer, ATS Evaluation &amp; Job Matching.
             </span>
           </div>
@@ -210,7 +210,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   className={({ isActive }) =>
                     `relative px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-150 flex items-center gap-1.5 whitespace-nowrap ${
                       isActive
-                        ? 'bg-indigo-50 dark:bg-indigo-600/30 text-indigo-600 dark:text-white border border-indigo-200 dark:border-indigo-500/50 shadow-xs font-semibold'
+                        ? 'bg-indigo-100 text-indigo-900 border border-indigo-300 font-bold dark:bg-indigo-600/30 dark:text-white dark:border-indigo-500/50 shadow-xs'
                         : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                     }`
                   }
@@ -334,7 +334,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   className={({ isActive }) =>
                     `flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                       isActive
-                        ? 'bg-indigo-50 dark:bg-indigo-600/30 text-indigo-600 dark:text-white font-bold border border-indigo-200 dark:border-indigo-500/40'
+                        ? 'bg-indigo-100 text-indigo-900 border border-indigo-300 font-bold dark:bg-indigo-600/30 dark:text-white dark:border-indigo-500/40'
                         : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5'
                     }`
                   }

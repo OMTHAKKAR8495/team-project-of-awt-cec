@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   body {
@@ -196,15 +196,15 @@ html.light .nexus-glass-card .font-bold.text-white {
   color: #0f172a !important;
 }
 
-/* Buttons with gradient or solid backgrounds retain white text */
-html.light a[class*="bg-gradient"] *,
-html.light button[class*="bg-gradient"] *,
-html.light a[class*="bg-gradient"],
-html.light button[class*="bg-gradient"],
-html.light a[class*="bg-indigo-600"],
-html.light button[class*="bg-indigo-600"],
-html.light a[class*="bg-purple-600"],
-html.light button[class*="bg-purple-600"] {
+/* Buttons with solid gradient or solid color retain white text, using class~= to prevent matching dark: prefixed utilities */
+html.light a[class~="bg-indigo-600"],
+html.light button[class~="bg-indigo-600"],
+html.light a[class~="bg-purple-600"],
+html.light button[class~="bg-purple-600"],
+html.light a[class*="bg-gradient-to"] *,
+html.light button[class*="bg-gradient-to"] *,
+html.light a[class*="bg-gradient-to"],
+html.light button[class*="bg-gradient-to"] {
   color: #ffffff !important;
 }
 
