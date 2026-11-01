@@ -18,6 +18,7 @@ import {
   FALLBACK_CANDIDATES,
   filterFallbackJobs,
   filterFallbackCandidates,
+  matchesDivision,
 } from '../data/fallbackData';
 
 export const API_BASE_URL: string =
@@ -70,10 +71,18 @@ export interface HealthCheckResponse {
 // SUPABASE DIRECT BRIDGE (Fall-Through Client)
 // ==========================================
 export const SUPABASE_URL: string = import.meta.env.VITE_SUPABASE_URL || '';
-export const SUPABASE_KEY: string =
-  import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  '';
+export const SUPABASE_KEY: string = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
+export function shouldFallbackToSupabase(err: any): boolean {
+  if (err && err.response) {
+    // If it's a 4xx client error (e.g. 400 Bad Request, 404 Not Found, 409 Conflict),
+    // rethrow it immediately instead of attempting an erroneous fallback.
+    if (typeof err.response.status === 'number' && err.response.status >= 400 && err.response.status < 500) {
+      return false;
+    }
+  }
+  return true;
+}
 
 export async function fetchFromSupabaseDirect<T>(
   path: string,
@@ -153,7 +162,7 @@ export function mapSupabaseCandidateRow(row: any, jobMatch?: any): Candidate {
       uploadedAt: row.resume_uploaded_at || row.created_at,
     },
     extractedSkills: row.extracted_skills || [],
-    atsScore: row.ats_score || 85,
+    atsScore: row.ats_score ?? 85,
     matchedSkills: row.matched_skills || [],
     missingSkills: row.missing_skills || [],
     applicationStatus: row.application_status || 'pending',
@@ -221,6 +230,9 @@ export const getJobs = async (
             j.requiredSkills.some(s => s.toLowerCase().includes(q))
         );
       }
+      if (params?.division && params.division !== 'all') {
+        jobs = jobs.filter(j => matchesDivision(j, params.division!));
+      }
       if (params?.status) {
         jobs = jobs.filter(j => j.status === params.status);
       }
@@ -277,7 +289,10 @@ export const createJob = async (
   try {
     const response = await api.post<SingleResponse<Job>>('/jobs', jobData);
     return response.data;
-  } catch {
+  } catch (err: any) {
+    if (!shouldFallbackToSupabase(err)) {
+      throw err;
+    }
     try {
       const sbBody = {
         title: jobData.title,
@@ -325,7 +340,10 @@ export const updateJob = async (
   try {
     const response = await api.put<SingleResponse<Job>>(`/jobs/${id}`, updateData);
     return response.data;
-  } catch {
+  } catch (err: any) {
+    if (!shouldFallbackToSupabase(err)) {
+      throw err;
+    }
     try {
       const sbBody: Record<string, any> = {};
       if (updateData.title !== undefined) sbBody.title = updateData.title;
@@ -344,7 +362,7 @@ export const updateJob = async (
       }
       if (updateData.status !== undefined) sbBody.status = updateData.status;
 
-      const updated = await fetchFromSupabaseDirect<any[]>(`/jobs?id=eq.${id}`, {
+      const updated = await fetchFromSupabaseDirect<any[]>(`/jobs?id=eq.${encodeURIComponent(id)}`, {
         method: 'PATCH',
         body: sbBody,
         headers: { Prefer: 'return=representation' },
@@ -371,9 +389,19 @@ export const deleteJob = async (
   try {
     const response = await api.delete<SingleResponse<{ id: string; title: string }>>(`/jobs/${id}`);
     return response.data;
-  } catch {
+  } catch (err: any) {
+    if (!shouldFallbackToSupabase(err)) {
+      throw err;
+    }
     try {
-      await fetchFromSupabaseDirect(`/jobs?id=eq.${id}`, { method: 'DELETE' });
+      await fetchFromSupabaseDirect(`/candidates?job_id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' });
+      const deleted = await fetchFromSupabaseDirect<any[]>(`/jobs?id=eq.${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers: { Prefer: 'return=representation' },
+      });
+      if (deleted && deleted[0]) {
+        return { success: true, data: { id: deleted[0].id, title: deleted[0].title } };
+      }
     } catch {
       // safe fallback
     }
@@ -382,7 +410,7 @@ export const deleteJob = async (
       const removed = FALLBACK_JOBS.splice(idx, 1)[0];
       return { success: true, data: { id: removed._id, title: removed.title } };
     }
-    return { success: true, data: { id, title: 'Job deleted' } };
+    throw new Error(`Job with ID '${id}' was not found.`);
   }
 };
 
@@ -400,7 +428,10 @@ export const applyCandidate = async (
       },
     });
     return response.data;
-  } catch {
+  } catch (err: any) {
+    if (!shouldFallbackToSupabase(err)) {
+      throw err;
+    }
     const name = String(formData.get('name') || 'Candidate');
     const email = String(formData.get('email') || 'candidate@example.com');
     const phone = String(formData.get('phone') || '');
@@ -410,7 +441,7 @@ export const applyCandidate = async (
     let jobMatch: any = FALLBACK_JOBS.find(j => j._id === jobId);
     if (!jobMatch && jobId) {
       try {
-        const jRows = await fetchFromSupabaseDirect<any[]>(`/jobs?id=eq.${jobId}&select=*`);
+        const jRows = await fetchFromSupabaseDirect<any[]>(`/jobs?id=eq.${encodeURIComponent(jobId)}&select=*`);
         if (jRows && jRows[0]) {
           jobMatch = mapSupabaseJobRow(jRows[0]);
         }
@@ -418,23 +449,25 @@ export const applyCandidate = async (
         // safe fallback
       }
     }
-    if (!jobMatch) jobMatch = FALLBACK_JOBS[0];
+    if (!jobMatch) {
+      throw new Error(`The requested job could not be found or resolved.`);
+    }
 
     // Persist directly to Supabase cloud database
     try {
       const candidateBody = {
         name,
-        email,
-        phone,
+        email: email.toLowerCase().trim(),
+        phone: phone || null,
         job_id: jobMatch._id || jobId,
         application_status: 'pending',
-        ats_score: 88,
-        extracted_skills: jobMatch.requiredSkills || [],
-        matched_skills: jobMatch.requiredSkills || [],
+        ats_score: 0,
+        extracted_skills: [],
+        matched_skills: [],
         missing_skills: [],
         resume_original_name: resumeFile?.name || 'Submitted_Resume.pdf',
         resume_file_name: resumeFile?.name || 'Submitted_Resume.pdf',
-        resume_file_size: resumeFile?.size || 110000,
+        resume_file_size: resumeFile?.size ?? 0,
         resume_mime_type: resumeFile?.type || 'application/pdf',
         notes: '',
       };
@@ -458,7 +491,7 @@ export const applyCandidate = async (
     const newCandidate: Candidate = {
       _id: 'cand-offline-' + Date.now(),
       name,
-      email,
+      email: email.toLowerCase().trim(),
       phone,
       job: {
         _id: jobMatch._id,
@@ -470,13 +503,13 @@ export const applyCandidate = async (
       resume: {
         originalName: resumeFile?.name || 'Submitted_Resume.pdf',
         fileName: resumeFile?.name || 'Submitted_Resume.pdf',
-        fileSize: resumeFile?.size || 110000,
+        fileSize: resumeFile?.size ?? 0,
         mimeType: resumeFile?.type || 'application/pdf',
         uploadedAt: new Date().toISOString(),
       },
-      extractedSkills: jobMatch.requiredSkills || [],
-      atsScore: 88,
-      matchedSkills: jobMatch.requiredSkills || [],
+      extractedSkills: [],
+      atsScore: 0,
+      matchedSkills: [],
       missingSkills: [],
       applicationStatus: 'pending',
       createdAt: new Date().toISOString(),
@@ -493,7 +526,7 @@ export const applyCandidate = async (
         jobId: jobMatch._id,
         jobTitle: jobMatch.title,
         company: jobMatch.company,
-        atsScore: 88,
+        atsScore: 0,
         applicationStatus: 'pending',
         appliedAt: newCandidate.createdAt,
       });
@@ -619,9 +652,12 @@ export const updateCandidateStatus = async (
       status,
     });
     return response.data;
-  } catch {
+  } catch (err: any) {
+    if (!shouldFallbackToSupabase(err)) {
+      throw err;
+    }
     try {
-      const updated = await fetchFromSupabaseDirect<any[]>(`/candidates?id=eq.${id}`, {
+      const updated = await fetchFromSupabaseDirect<any[]>(`/candidates?id=eq.${encodeURIComponent(id)}`, {
         method: 'PATCH',
         body: { application_status: status },
         headers: { Prefer: 'return=representation' },
@@ -653,9 +689,12 @@ export const updateCandidateNotes = async (
       notes,
     });
     return response.data;
-  } catch {
+  } catch (err: any) {
+    if (!shouldFallbackToSupabase(err)) {
+      throw err;
+    }
     try {
-      const updated = await fetchFromSupabaseDirect<any[]>(`/candidates?id=eq.${id}`, {
+      const updated = await fetchFromSupabaseDirect<any[]>(`/candidates?id=eq.${encodeURIComponent(id)}`, {
         method: 'PATCH',
         body: { notes },
         headers: { Prefer: 'return=representation' },
@@ -692,7 +731,10 @@ export const updateCandidate = async (
   try {
     const response = await api.patch<SingleResponse<Candidate>>(`/candidates/${id}`, updateData);
     return response.data;
-  } catch {
+  } catch (err: any) {
+    if (!shouldFallbackToSupabase(err)) {
+      throw err;
+    }
     try {
       const sbBody: Record<string, any> = {};
       if (updateData.name !== undefined) sbBody.name = updateData.name;
@@ -702,7 +744,7 @@ export const updateCandidate = async (
       if (updateData.status !== undefined) sbBody.application_status = updateData.status;
       if (updateData.applicationStatus !== undefined) sbBody.application_status = updateData.applicationStatus;
 
-      const updated = await fetchFromSupabaseDirect<any[]>(`/candidates?id=eq.${id}`, {
+      const updated = await fetchFromSupabaseDirect<any[]>(`/candidates?id=eq.${encodeURIComponent(id)}`, {
         method: 'PATCH',
         body: sbBody,
         headers: { Prefer: 'return=representation' },
@@ -736,9 +778,18 @@ export const deleteCandidate = async (
   try {
     const response = await api.delete<SingleResponse<{ id: string }>>(`/candidates/${id}`);
     return response.data;
-  } catch {
+  } catch (err: any) {
+    if (!shouldFallbackToSupabase(err)) {
+      throw err;
+    }
     try {
-      await fetchFromSupabaseDirect(`/candidates?id=eq.${id}`, { method: 'DELETE' });
+      const deleted = await fetchFromSupabaseDirect<any[]>(`/candidates?id=eq.${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers: { Prefer: 'return=representation' },
+      });
+      if (deleted && deleted[0]) {
+        return { success: true, data: { id: deleted[0].id } };
+      }
     } catch {
       // safe fallback
     }
@@ -746,8 +797,9 @@ export const deleteCandidate = async (
     const idx = FALLBACK_CANDIDATES.findIndex(c => c._id === id);
     if (idx !== -1) {
       FALLBACK_CANDIDATES.splice(idx, 1);
+      return { success: true, data: { id } };
     }
-    return { success: true, data: { id } };
+    throw new Error(`Candidate with ID '${id}' was not found.`);
   }
 };
 
