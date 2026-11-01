@@ -169,6 +169,114 @@ export const FALLBACK_JOBS: Job[] = [
     createdAt: '2026-10-23T12:00:00.000Z',
     updatedAt: '2026-10-29T12:00:00.000Z',
   },
+  {
+    _id: '507f1f77bcf86cd799439007',
+    title: 'Renewable Grid & Smart Energy Systems Engineer',
+    company: 'Nexus Clean Energy & Power Grids',
+    description: 'Design and deploy smart grid optimization software and distributed renewable energy microgrid controllers across European and North American industrial hubs.',
+    location: 'Zurich, Switzerland / Hybrid',
+    employmentType: 'full-time',
+    requiredSkills: ['Power Systems', 'SCADA', 'Python', 'IoT', 'Energy Storage', 'Grid Simulation'],
+    preferredSkills: ['MATLAB', 'C++', 'Renewable Integration', 'Modbus', 'Docker'],
+    responsibilities: [
+      'Model high-voltage renewable microgrid load balancing using real-time telemetry.',
+      'Deploy autonomous power distribution software for battery energy storage systems.',
+      'Collaborate with regional transmission operators on grid stability compliance.',
+    ],
+    requirements: [
+      'B.S. or M.S. in Electrical Engineering, Energy Systems, or Computational Science.',
+      '3+ years of experience with industrial IoT or smart grid energy distribution architectures.',
+    ],
+    salaryRange: {
+      min: 130000,
+      max: 175000,
+      currency: 'USD',
+    },
+    status: 'open',
+    createdAt: '2026-10-24T09:00:00.000Z',
+    updatedAt: '2026-10-29T09:00:00.000Z',
+  },
+  {
+    _id: '507f1f77bcf86cd799439008',
+    title: 'Bio-Genomics & Healthcare Analytics Specialist',
+    company: 'Nexus Bio-Genomics & Health Systems',
+    description: 'Advance computational genomics discovery pipelines and clinical trial data harmonization using secure high-throughput cloud bioinformatics infrastructure.',
+    location: 'London, United Kingdom / Remote',
+    employmentType: 'full-time',
+    requiredSkills: ['Bioinformatics', 'Python', 'R', 'Genomics', 'Machine Learning', 'SQL'],
+    preferredSkills: ['Nextflow', 'Docker', 'AWS HealthOmics', 'Bioconductor', 'Statistical Genetics'],
+    responsibilities: [
+      'Build automated DNA/RNA sequencing pipelines for large-scale clinical oncology studies.',
+      'Apply machine learning models to identify targeted therapeutic molecular markers.',
+      'Ensure strict adherence to HIPAA, GDPR, and international clinical data standards.',
+    ],
+    requirements: [
+      'Advanced degree in Bioinformatics, Computational Biology, or Data Science.',
+      'Proven track record writing reproducible scientific pipelines in Python and R.',
+    ],
+    salaryRange: {
+      min: 125000,
+      max: 170000,
+      currency: 'USD',
+    },
+    status: 'open',
+    createdAt: '2026-10-25T10:30:00.000Z',
+    updatedAt: '2026-10-29T10:30:00.000Z',
+  },
+  {
+    _id: '507f1f77bcf86cd799439009',
+    title: 'Global Talent Acquisition Partner & People Operations',
+    company: 'Nexus Dynamics Corporate Services',
+    description: 'Drive strategic executive and technical hiring across multinational engineering divisions. Build university fellowship programs and champion diversity in technical leadership.',
+    location: 'New York, NY / Hybrid',
+    employmentType: 'full-time',
+    requiredSkills: ['Technical Recruiting', 'Talent Sourcing', 'ATS Management', 'HR Strategy', 'Interviewing'],
+    preferredSkills: ['Workday', 'LinkedIn Recruiter', 'People Analytics', 'Compensation Benchmarking'],
+    responsibilities: [
+      'Lead full-cycle hiring workflows for senior engineering and AI research appointments.',
+      'Design equitable candidate assessment frameworks and reduce time-to-hire by 30%.',
+      'Partner directly with business division leaders to forecast global headcount demands.',
+    ],
+    requirements: [
+      '3+ years of full-cycle talent acquisition experience in tech or engineering sectors.',
+      'Demonstrated expertise utilizing modern candidate intelligence systems.',
+    ],
+    salaryRange: {
+      min: 90000,
+      max: 130000,
+      currency: 'USD',
+    },
+    status: 'open',
+    createdAt: '2026-10-26T11:00:00.000Z',
+    updatedAt: '2026-10-29T11:00:00.000Z',
+  },
+  {
+    _id: '507f1f77bcf86cd799439010',
+    title: 'Corporate Brand Strategist & Communications Manager',
+    company: 'Nexus Global Communications',
+    description: 'Direct worldwide enterprise brand positioning, stakeholder relations, and external storytelling for key technology releases and global ESG initiatives.',
+    location: 'San Francisco, CA / Remote',
+    employmentType: 'full-time',
+    requiredSkills: ['Brand Strategy', 'Communications', 'Public Relations', 'Content Marketing', 'Media Relations'],
+    preferredSkills: ['Crisis Communications', 'Executive Ghostwriting', 'SEO', 'Digital Analytics'],
+    responsibilities: [
+      'Author high-impact press releases, annual ESG disclosures, and keynote presentations.',
+      'Manage tier-1 global tech and business media relationships across Americas and EMEA.',
+      'Lead cross-functional marketing campaigns for groundbreaking industrial AI product launches.',
+    ],
+    requirements: [
+      '4+ years of professional corporate communications or PR agency experience.',
+      'Exceptional written storytelling skills and strategic executive presence.',
+    ],
+    salaryRange: {
+      min: 105000,
+      max: 145000,
+      currency: 'USD',
+    },
+    status: 'open',
+    createdAt: '2026-10-27T13:45:00.000Z',
+    updatedAt: '2026-10-29T13:45:00.000Z',
+  },
 ];
 
 export const FALLBACK_CANDIDATES: Candidate[] = [
@@ -290,13 +398,15 @@ export function filterFallbackJobs(params?: JobQueryParams) {
   let list = [...FALLBACK_JOBS];
 
   if (params?.search) {
-    const q = params.search.toLowerCase();
+    const q = params.search.toLowerCase().trim();
     list = list.filter(
       j =>
         j.title.toLowerCase().includes(q) ||
         j.company.toLowerCase().includes(q) ||
         j.location.toLowerCase().includes(q) ||
-        j.requiredSkills.some(s => s.toLowerCase().includes(q))
+        j.description.toLowerCase().includes(q) ||
+        j.requiredSkills.some(s => s.toLowerCase().includes(q)) ||
+        (j.preferredSkills && j.preferredSkills.some(s => s.toLowerCase().includes(q)))
     );
   }
 
