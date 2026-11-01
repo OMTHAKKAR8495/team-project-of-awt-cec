@@ -6,6 +6,7 @@ import { resumeUpload } from '../middleware/uploadMiddleware';
 import { validate } from '../middleware/validateRequest';
 import { uploadAndAnalysisLimiter } from '../middleware/rateLimit';
 import { authenticateToken, requireRole } from '../middleware/auth.middleware';
+import { isSupabaseReady } from '../config/supabase';
 import {
   applyCandidateBodySchema,
   candidateQuerySchema,
@@ -17,16 +18,15 @@ import {
 
 const router = Router();
 
-// Middleware ensuring MongoDB connection is active
+// Middleware ensuring database connection is active (MongoDB or Supabase)
 const requireDb = (_req: Request, res: Response, next: NextFunction): void => {
-  if (mongoose.connection.readyState !== 1) {
-    res.status(503).json({
-      success: false,
-      message: 'Database service is unavailable. Please ensure MongoDB is running and connected.',
-    });
-    return;
+  if (isSupabaseReady() || mongoose.connection.readyState === 1) {
+    return next();
   }
-  next();
+  res.status(503).json({
+    success: false,
+    message: 'Database service is unavailable. Please ensure MongoDB or Supabase is connected.',
+  });
 };
 
 const idParamSchema = z.object({
