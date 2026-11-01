@@ -152,22 +152,22 @@ export const InterviewStudioPage: React.FC = () => {
     <div className="space-y-12 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* HEADER */}
       <div className="space-y-4 pt-6 text-center sm:text-left">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-950/60 border border-indigo-500/40 text-cyan-300">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-500/40 text-indigo-700 dark:text-cyan-300">
+          <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-cyan-400" />
           <span>AUTONOMOUS CANDIDATE PREPARATION PLATFORM</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           AI Interview Studio &amp; Technical Simulator
         </h1>
-        <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
+        <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
           Simulate enterprise technical interviews designed by Nexus Dynamics hiring committees. Receive instant evaluation against model answer benchmarks and communication criteria.
         </p>
 
         {/* Realistic Simulation Disclosure */}
-        <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-500/20 text-xs text-slate-300 flex items-start gap-2.5 max-w-3xl">
-          <Lightbulb className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-          <p className="text-[11px] text-slate-300 leading-relaxed">
-            <strong className="text-cyan-300">Technical Simulator Notice:</strong> Questions and scoring rubrics are curated standard engineering interview tracks. Voice dictation is simulated locally and no audio telemetry is transmitted to third-party AI endpoints.
+        <div className="p-3.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-500/20 text-xs text-slate-600 dark:text-slate-300 flex items-start gap-2.5 max-w-3xl">
+          <Lightbulb className="w-4 h-4 text-indigo-600 dark:text-cyan-400 shrink-0 mt-0.5" />
+          <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+            <strong className="text-indigo-700 dark:text-cyan-300">Technical Simulator Notice:</strong> Questions and scoring rubrics are curated standard engineering interview tracks. Voice dictation is simulated locally and no audio telemetry is transmitted to third-party AI endpoints.
           </p>
         </div>
       </div>
@@ -176,10 +176,10 @@ export const InterviewStudioPage: React.FC = () => {
       {/* STAGE 1: SETUP VIEW */}
       {/* ========================================================== */}
       {stage === 'setup' && (
-        <div className="nexus-glass-card rounded-3xl p-6 sm:p-10 border border-indigo-500/30 bg-[#0a0e28]/80 space-y-8">
+        <div className="nexus-glass-card rounded-3xl p-6 sm:p-10 border border-slate-200 dark:border-indigo-500/30 bg-white dark:bg-[#0a0e28]/80 space-y-8 shadow-sm dark:shadow-none">
           <div className="space-y-2">
-            <h2 className="text-xl font-bold text-white">Select Practice Requisition Track</h2>
-            <p className="text-xs text-slate-400">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Select Practice Requisition Track</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Each discipline simulates question pools curated by technical leads across our 6 business divisions.
             </p>
           </div>
@@ -193,8 +193,8 @@ export const InterviewStudioPage: React.FC = () => {
                 onClick={() => setSelectedTrack(track.id)}
                 className={`p-5 rounded-2xl border text-left transition-all cursor-pointer space-y-2 ${
                   selectedTrack === track.id
-                    ? 'border-cyan-400 bg-cyan-950/40 text-white shadow-lg shadow-cyan-500/10'
-                    : 'border-white/10 hover:border-white/20 bg-white/5 text-slate-400 hover:text-white'
+                    ? 'border-indigo-600 bg-indigo-50 text-indigo-900 dark:border-cyan-400 dark:bg-cyan-950/40 dark:text-white shadow-lg shadow-indigo-500/10 dark:shadow-cyan-500/10'
+                    : 'border-slate-200 hover:border-slate-300 bg-slate-50/80 text-slate-600 hover:text-slate-900 dark:border-white/10 dark:hover:border-white/20 dark:bg-white/5 dark:text-slate-400 dark:hover:text-white'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -258,28 +258,28 @@ export const InterviewStudioPage: React.FC = () => {
       {/* STAGE 2: ACTIVE INTERVIEW SESSION */}
       {/* ========================================================== */}
       {stage === 'active' && (
-        <div className="nexus-glass-card rounded-3xl p-6 sm:p-10 border border-indigo-500/30 bg-[#090d24]/80 space-y-8">
+        <div className="nexus-glass-card rounded-3xl p-6 sm:p-10 border border-slate-200 dark:border-indigo-500/30 bg-white dark:bg-[#090d24]/80 space-y-8 shadow-sm dark:shadow-none">
           {/* Top Status Bar: Track, Progress & Timer */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-white/10">
             <div className="space-y-1">
-              <span className="text-[10px] uppercase font-bold text-cyan-400 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-indigo-600 dark:text-cyan-400 tracking-wider">
                 ACTIVE PRACTICE SESSION &bull; {currentTrackObj.title}
               </span>
-              <h2 className="text-base font-bold text-white">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
                 Question {currentQuestionIdx + 1} of {questionsList.length}
               </h2>
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-cyan-300">
-                <Clock className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-mono text-indigo-700 dark:text-cyan-300">
+                <Clock className="w-3.5 h-3.5 text-indigo-600 dark:text-cyan-400" />
                 <span>Elapsed: {formatTimer(timerSeconds)}</span>
               </div>
 
               <button
                 type="button"
                 onClick={() => setStage('setup')}
-                className="text-xs text-slate-400 hover:text-white"
+                className="text-xs text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white cursor-pointer"
               >
                 Exit Session
               </button>
@@ -287,11 +287,11 @@ export const InterviewStudioPage: React.FC = () => {
           </div>
 
           {/* Question Display Card */}
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-[#0d1338] to-[#0a0f28] border border-indigo-500/30 space-y-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-800/40">
+          <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-50 to-cyan-50 dark:from-[#0d1338] dark:to-[#0a0f28] border border-indigo-200 dark:border-indigo-500/30 space-y-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-cyan-400 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-cyan-950/80 border border-indigo-200 dark:border-cyan-800/40">
               {currentQ.category}
             </span>
-            <p className="text-base sm:text-lg font-bold text-white leading-relaxed">
+            <p className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-relaxed">
               {currentQ.question}
             </p>
           </div>
@@ -299,7 +299,7 @@ export const InterviewStudioPage: React.FC = () => {
           {/* Candidate Response Workspace */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-300">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Your Technical Response (Speech or Written)
               </label>
 
@@ -310,7 +310,7 @@ export const InterviewStudioPage: React.FC = () => {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   isRecording
                     ? 'bg-rose-600 text-white animate-pulse'
-                    : 'bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10'
+                    : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10'
                 }`}
               >
                 {isRecording ? <Mic className="w-3.5 h-3.5" /> : <MicOff className="w-3.5 h-3.5" />}
@@ -323,17 +323,17 @@ export const InterviewStudioPage: React.FC = () => {
               placeholder="Structure your answer clearly: state foundational mechanisms, trade-offs, architecture patterns, and production error mitigation..."
               value={candidateAnswer}
               onChange={e => setCandidateAnswer(e.target.value)}
-              className="w-full bg-[#070a1a] border border-white/10 rounded-2xl p-4 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-cyan-400"
+              className="w-full bg-slate-50 dark:bg-[#070a1a] border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 dark:focus:border-cyan-400"
             />
           </div>
 
           {/* Key Evaluation Anchors Hint */}
-          <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-xs text-slate-400 space-y-1.5">
-            <div className="font-semibold text-cyan-300 flex items-center gap-1.5">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 text-xs text-slate-500 dark:text-slate-400 space-y-1.5">
+            <div className="font-semibold text-indigo-700 dark:text-cyan-300 flex items-center gap-1.5">
               <Lightbulb className="w-3.5 h-3.5" />
               <span>Recommended Technical Anchors:</span>
             </div>
-            <ul className="list-disc list-inside space-y-1 pl-1 text-[11px] text-slate-400">
+            <ul className="list-disc list-inside space-y-1 pl-1 text-[11px] text-slate-600 dark:text-slate-400">
               {currentQ.expectedKeyPoints.map((pt, i) => (
                 <li key={i}>{pt}</li>
               ))}
@@ -366,52 +366,52 @@ export const InterviewStudioPage: React.FC = () => {
       {/* STAGE 3: COMPLETED RESULTS & SCORECARD */}
       {/* ========================================================== */}
       {stage === 'completed' && (
-        <div className="nexus-glass-card rounded-3xl p-6 sm:p-10 border border-indigo-500/30 bg-[#090d24]/80 space-y-8">
+        <div className="nexus-glass-card rounded-3xl p-6 sm:p-10 border border-slate-200 dark:border-indigo-500/30 bg-white dark:bg-[#090d24]/80 space-y-8 shadow-sm dark:shadow-none">
           <div className="text-center space-y-3">
             <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white flex items-center justify-center mx-auto shadow-xl shadow-cyan-500/20">
               <Award className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
               Evaluation Complete
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto">
               Your technical responses have been evaluated against Nexus Dynamics senior engineering rubric.
             </p>
           </div>
 
           {/* Score Summary Box */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-center space-y-1">
-              <span className="text-[10px] uppercase font-bold text-slate-400">Overall Readiness</span>
-              <div className="text-3xl font-black text-emerald-400">{calculateReadinessScore()}%</div>
-              <span className="text-[11px] text-emerald-300">Strong Candidate Tier</span>
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-center space-y-1">
+              <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Overall Readiness</span>
+              <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{calculateReadinessScore()}%</div>
+              <span className="text-[11px] text-emerald-700 dark:text-emerald-300">Strong Candidate Tier</span>
             </div>
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-center space-y-1">
-              <span className="text-[10px] uppercase font-bold text-slate-400">Total Duration</span>
-              <div className="text-3xl font-black text-white">{formatTimer(timerSeconds)}</div>
-              <span className="text-[11px] text-cyan-400">Paced Well</span>
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-center space-y-1">
+              <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Total Duration</span>
+              <div className="text-3xl font-black text-slate-900 dark:text-white">{formatTimer(timerSeconds)}</div>
+              <span className="text-[11px] text-indigo-600 dark:text-cyan-400">Paced Well</span>
             </div>
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/10 text-center space-y-1">
-              <span className="text-[10px] uppercase font-bold text-slate-400">Questions Answered</span>
-              <div className="text-3xl font-black text-white">{Object.keys(answers).length} / {questionsList.length}</div>
-              <span className="text-[11px] text-purple-300">Complete Coverage</span>
+            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-center space-y-1">
+              <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Questions Answered</span>
+              <div className="text-3xl font-black text-slate-900 dark:text-white">{Object.keys(answers).length} / {questionsList.length}</div>
+              <span className="text-[11px] text-purple-600 dark:text-purple-300">Complete Coverage</span>
             </div>
           </div>
 
           {/* Model Answers Review */}
-          <div className="space-y-4 pt-4 border-t border-white/5">
-            <h3 className="font-bold text-white text-base">Key Question Review &amp; Model Answers</h3>
+          <div className="space-y-4 pt-4 border-t border-slate-200 dark:border-white/5">
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">Key Question Review &amp; Model Answers</h3>
             {questionsList.map((q, idx) => (
-              <div key={q.id} className="p-5 rounded-2xl bg-white/5 border border-white/5 space-y-2">
+              <div key={q.id} className="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-cyan-300">Question {idx + 1}: {q.category}</span>
-                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                  <span className="font-bold text-indigo-600 dark:text-cyan-300">Question {idx + 1}: {q.category}</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" /> Evaluated
                   </span>
                 </div>
-                <p className="text-xs font-semibold text-white">{q.question}</p>
-                <div className="text-xs text-slate-300 pt-1 leading-relaxed bg-[#060814]/70 p-3 rounded-xl border border-white/5">
-                  <strong className="text-cyan-400 block mb-0.5">Nexus Model Solution Benchmark:</strong>
+                <p className="text-xs font-semibold text-slate-900 dark:text-white">{q.question}</p>
+                <div className="text-xs text-slate-700 dark:text-slate-300 pt-1 leading-relaxed bg-white dark:bg-[#060814]/70 p-3 rounded-xl border border-slate-200 dark:border-white/5">
+                  <strong className="text-indigo-600 dark:text-cyan-400 block mb-0.5">Nexus Model Solution Benchmark:</strong>
                   {q.sampleModelAnswer}
                 </div>
               </div>
@@ -423,7 +423,7 @@ export const InterviewStudioPage: React.FC = () => {
             <button
               type="button"
               onClick={handleStartSession}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-semibold text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-300 dark:border-white/10 flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Retry / Practice Another Track</span>

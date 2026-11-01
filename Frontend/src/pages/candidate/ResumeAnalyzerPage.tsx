@@ -211,14 +211,14 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
     <div className="space-y-8 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-950/70 text-cyan-300 border border-indigo-500/40">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-cyan-300 border border-indigo-200 dark:border-indigo-500/40">
+          <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-cyan-400" />
           <span>ATS Evaluation Engine</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Resume ATS Compatibility & Quality Analyzer
         </h1>
-        <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
+        <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
           Check your overall general resume score, or evaluate compatibility against specific enterprise roles using deterministic keyword extraction and structural ATS audit algorithms.
         </p>
       </div>
@@ -236,7 +236,7 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
           )}
 
           {/* Mode Switcher */}
-          <div className="flex flex-wrap border-b border-slate-200 gap-4 sm:gap-6">
+          <div className="flex flex-wrap border-b border-slate-200 dark:border-slate-800 gap-4 sm:gap-6">
             <button
               type="button"
               onClick={() => {
@@ -245,13 +245,13 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
               }}
               className={`pb-3 text-xs sm:text-sm font-semibold transition-colors border-b-2 -mb-px cursor-pointer flex items-center gap-1.5 ${
                 mode === 'general'
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800'
+                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <FileCheck className="w-4 h-4" />
               <span>General Resume Score</span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700">
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300">
                 Any Resume
               </span>
             </button>
@@ -263,8 +263,8 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
               }}
               className={`pb-3 text-xs sm:text-sm font-semibold transition-colors border-b-2 -mb-px cursor-pointer flex items-center gap-1.5 ${
                 mode === 'job'
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800'
+                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <Building2 className="w-4 h-4" />
@@ -278,8 +278,8 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
               }}
               className={`pb-3 text-xs sm:text-sm font-semibold transition-colors border-b-2 -mb-px cursor-pointer flex items-center gap-1.5 ${
                 mode === 'custom'
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-800'
+                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <Compass className="w-4 h-4" />
@@ -289,12 +289,12 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
 
           {/* Mode 1: General Score Mode Description */}
           {mode === 'general' && (
-            <div className="p-4 bg-indigo-50/60 rounded-xl border border-indigo-200/80 space-y-2">
-              <div className="flex items-center gap-2 text-indigo-900 font-bold text-xs">
-                <Sparkles className="w-4 h-4 text-indigo-600" />
+            <div className="p-4 bg-indigo-50/60 dark:bg-indigo-950/30 rounded-xl border border-indigo-200/80 dark:border-indigo-800/40 space-y-2">
+              <div className="flex items-center gap-2 text-indigo-900 dark:text-indigo-200 font-bold text-xs">
+                <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <span>General Resume Quality & ATS Readiness Audit</span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Upload your resume to evaluate overall ATS compliance, document structure, detected sections (Education, Experience, Skills), action verb intensity, quantifiable achievements, and contact channels. No target job required.
               </p>
             </div>
@@ -303,7 +303,7 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
           {/* Mode 2: Job Selector */}
           {mode === 'job' && (
             <div className="space-y-3">
-              <label className="block text-xs font-semibold text-slate-700">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                 Select Target Job Posting <span className="text-rose-500">*</span>
               </label>
 
@@ -312,7 +312,7 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
                   <select
                     value={selectedJobId}
                     onChange={e => setSelectedJobId(e.target.value)}
-                    className="w-full py-2.5 px-3 text-sm rounded-lg border border-slate-200 bg-white text-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none cursor-pointer"
+                    className="w-full py-2.5 px-3 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none cursor-pointer"
                   >
                     {availableJobs.map(job => (
                       <option key={job._id} value={job._id}>
@@ -474,50 +474,50 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
             {/* General Mode 4-Pillar Score Breakdown */}
             {analysisResult.generalBreakdown ? (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
-                  <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                     Structure & Layout
                   </span>
-                  <span className="text-lg font-bold text-slate-900">
+                  <span className="text-lg font-bold text-slate-900 dark:text-white">
                     {analysisResult.generalBreakdown.structureScore}/25
                   </span>
-                  <span className="text-[11px] text-slate-500 block mt-0.5">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
                     {analysisResult.generalBreakdown.sectionsDetected.length} sections found
                   </span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
-                  <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                     Skill Breadth
                   </span>
-                  <span className="text-lg font-bold text-indigo-600">
+                  <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
                     {analysisResult.generalBreakdown.skillsScore}/30
                   </span>
-                  <span className="text-[11px] text-slate-500 block mt-0.5">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
                     {analysisResult.extractedSkills.length} skills identified
                   </span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
-                  <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                     Impact & Verbs
                   </span>
-                  <span className="text-lg font-bold text-cyan-600">
+                  <span className="text-lg font-bold text-cyan-600 dark:text-cyan-400">
                     {analysisResult.generalBreakdown.impactScore}/25
                   </span>
-                  <span className="text-[11px] text-slate-500 block mt-0.5">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
                     {analysisResult.generalBreakdown.actionVerbsCount} action verbs
                   </span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
-                  <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                     Contact Channels
                   </span>
-                  <span className="text-lg font-bold text-emerald-600">
+                  <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                     {analysisResult.generalBreakdown.completenessScore}/20
                   </span>
-                  <span className="text-[11px] text-slate-500 block mt-0.5">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
                     Profiles & links verified
                   </span>
                 </div>
@@ -525,11 +525,11 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
             ) : (
               /* Role-Specific Mode Score Breakdown */
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
-                  <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                     Required Skills Coverage
                   </span>
-                  <span className="text-lg font-bold text-slate-900">
+                  <span className="text-lg font-bold text-slate-900 dark:text-white">
                     {analysisResult.breakdown.requiredCoveragePercent}%
                   </span>
                   <span className="text-[11px] text-slate-400 block mt-0.5">
@@ -537,11 +537,11 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
                   </span>
                 </div>
 
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
-                  <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                     Preferred Skills Match
                   </span>
-                  <span className="text-lg font-bold text-indigo-600">
+                  <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
                     {analysisResult.breakdown.preferredSkillsMatched} / {analysisResult.breakdown.preferredSkillsTotal}
                   </span>
                   <span className="text-[11px] text-slate-400 block mt-0.5">
@@ -549,11 +549,11 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
                   </span>
                 </div>
 
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
-                  <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                     Total Identified Skills
                   </span>
-                  <span className="text-lg font-bold text-cyan-600">
+                  <span className="text-lg font-bold text-cyan-600 dark:text-cyan-400">
                     {analysisResult.extractedSkills.length}
                   </span>
                   <span className="text-[11px] text-slate-400 block mt-0.5">
@@ -561,11 +561,11 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
                   </span>
                 </div>
 
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-center">
-                  <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider block">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 text-center">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                     Deterministic Score
                   </span>
-                  <span className="text-lg font-bold text-emerald-600">
+                  <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                     {analysisResult.score}/100
                   </span>
                   <span className="text-[11px] text-slate-400 block mt-0.5">

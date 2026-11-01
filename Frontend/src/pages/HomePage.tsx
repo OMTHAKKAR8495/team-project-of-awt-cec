@@ -181,26 +181,26 @@ export const HomePage: React.FC = () => {
 
         <div className="space-y-6 max-w-4xl mx-auto">
           {/* Pill badge: FORTUNE 500 MULTINATIONAL CONGLOMERATE */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-950/50 border border-indigo-500/40 text-purple-300 shadow-sm shadow-indigo-500/10">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-500/40 text-purple-700 dark:text-purple-300 shadow-sm shadow-indigo-500/10">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-cyan-400" />
             <span className="tracking-wide uppercase text-[11px]">Fortune 500 Multinational Conglomerate</span>
           </div>
 
           {/* Massive Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1] sm:leading-[1.15]">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1] sm:leading-[1.15]">
             Architecting the Future of{' '}
-            <span className="bg-gradient-to-r from-purple-400 via-indigo-300 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 dark:from-purple-400 dark:via-indigo-300 dark:to-cyan-400 bg-clip-text text-transparent">
               Global Enterprise &amp; Technology
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-slate-300 text-sm sm:text-lg max-w-3xl mx-auto leading-relaxed">
+          <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-lg max-w-3xl mx-auto leading-relaxed">
             Nexus Dynamics powers global transformation across{' '}
-            <strong className="text-white font-semibold">Artificial Intelligence</strong>,{' '}
-            <strong className="text-white font-semibold">Renewable Energy</strong>,{' '}
-            <strong className="text-white font-semibold">Healthcare Systems</strong>, and{' '}
-            <strong className="text-white font-semibold">Financial Advisory</strong> for Fortune 500 corporations worldwide.
+            <strong className="text-slate-900 dark:text-white font-semibold">Artificial Intelligence</strong>,{' '}
+            <strong className="text-slate-900 dark:text-white font-semibold">Renewable Energy</strong>,{' '}
+            <strong className="text-slate-900 dark:text-white font-semibold">Healthcare Systems</strong>, and{' '}
+            <strong className="text-slate-900 dark:text-white font-semibold">Financial Advisory</strong> for Fortune 500 corporations worldwide.
           </p>
 
           {/* Action Buttons */}
@@ -216,21 +216,21 @@ export const HomePage: React.FC = () => {
 
             <Link
               to="/divisions"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-semibold text-slate-200 bg-[#0d122e]/80 hover:bg-[#141b44] border border-indigo-500/30 hover:border-indigo-400/50 shadow-md transition-all cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-semibold text-slate-800 dark:text-slate-200 bg-white hover:bg-slate-100 dark:bg-[#0d122e]/80 dark:hover:bg-[#141b44] border border-slate-300 dark:border-indigo-500/30 hover:border-indigo-400/50 shadow-md transition-all cursor-pointer"
             >
-              <Globe className="w-4 h-4 text-indigo-400" />
+              <Globe className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               <span>Global Business Divisions</span>
             </Link>
           </div>
 
           {/* Pill Ticker: NOW HIRING GLOBALLY */}
           <div className="pt-4 flex justify-center">
-            <div className="inline-flex flex-wrap items-center justify-center gap-2 px-4 py-2 rounded-full bg-[#080d22] border border-white/10 text-xs">
-              <span className="font-extrabold text-emerald-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#080d22] border border-slate-200 dark:border-white/10 text-xs shadow-xs">
+              <span className="font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
                 Now Hiring Globally:
               </span>
-              <span className="text-slate-300 font-medium">
+              <span className="text-slate-600 dark:text-slate-300 font-medium">
                 Software &amp; AI, Engineering, Finance, Biotech, HR, Legal &amp; Sales
               </span>
             </div>
@@ -240,56 +240,56 @@ export const HomePage: React.FC = () => {
         {/* 4 Stat Cards (Screenshot 1) */}
         <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
           {/* Card 1 */}
-          <div className="nexus-glass-card rounded-2xl p-6 text-left border border-white/10 space-y-2">
-            <div className="text-[11px] uppercase font-bold tracking-wider text-slate-400">
+          <div className="nexus-glass-card rounded-2xl p-6 text-left border border-slate-200 dark:border-white/10 space-y-2">
+            <div className="text-[11px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
               ANNUAL REVENUE
             </div>
-            <div className="text-3xl font-extrabold text-white tracking-tight">
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               $52.4 Billion
             </div>
-            <div className="flex items-center gap-1 text-xs font-semibold text-cyan-400">
+            <div className="flex items-center gap-1 text-xs font-semibold text-cyan-600 dark:text-cyan-400">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>+14.2% YoY</span>
             </div>
           </div>
 
           {/* Card 2 */}
-          <div className="nexus-glass-card rounded-2xl p-6 text-left border border-white/10 space-y-2">
-            <div className="text-[11px] uppercase font-bold tracking-wider text-slate-400">
+          <div className="nexus-glass-card rounded-2xl p-6 text-left border border-slate-200 dark:border-white/10 space-y-2">
+            <div className="text-[11px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
               GLOBAL WORKFORCE
             </div>
-            <div className="text-3xl font-extrabold text-white tracking-tight">
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               124,000+
             </div>
-            <div className="flex items-center gap-1 text-xs font-semibold text-cyan-400">
+            <div className="flex items-center gap-1 text-xs font-semibold text-cyan-600 dark:text-cyan-400">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>Across 65+ Nations</span>
             </div>
           </div>
 
           {/* Card 3 */}
-          <div className="nexus-glass-card rounded-2xl p-6 text-left border border-white/10 space-y-2">
-            <div className="text-[11px] uppercase font-bold tracking-wider text-slate-400">
+          <div className="nexus-glass-card rounded-2xl p-6 text-left border border-slate-200 dark:border-white/10 space-y-2">
+            <div className="text-[11px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
               R&amp;D INVESTMENT
             </div>
-            <div className="text-3xl font-extrabold text-white tracking-tight">
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               $6.8 Billion
             </div>
-            <div className="flex items-center gap-1 text-xs font-semibold text-cyan-400">
+            <div className="flex items-center gap-1 text-xs font-semibold text-cyan-600 dark:text-cyan-400">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>In Next-Gen AI &amp; Tech</span>
             </div>
           </div>
 
           {/* Card 4 */}
-          <div className="nexus-glass-card rounded-2xl p-6 text-left border border-white/10 space-y-2">
-            <div className="text-[11px] uppercase font-bold tracking-wider text-slate-400">
+          <div className="nexus-glass-card rounded-2xl p-6 text-left border border-slate-200 dark:border-white/10 space-y-2">
+            <div className="text-[11px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
               ESG NET-ZERO GOAL
             </div>
-            <div className="text-3xl font-extrabold text-white tracking-tight">
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               100% Clean
             </div>
-            <div className="flex items-center gap-1 text-xs font-semibold text-cyan-400">
+            <div className="flex items-center gap-1 text-xs font-semibold text-cyan-600 dark:text-cyan-400">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>Target Year 2030</span>
             </div>
@@ -297,18 +297,18 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Global Talent Opportunity Banner Card (Screenshot 1) */}
-        <div className="mt-8 max-w-6xl mx-auto nexus-glass-card rounded-3xl p-6 sm:p-10 border border-indigo-500/30 bg-gradient-to-r from-[#0d1233] via-[#090e24] to-[#0c133a] flex flex-col md:flex-row items-center justify-between gap-6 text-left">
+        <div className="mt-8 max-w-6xl mx-auto nexus-glass-card rounded-3xl p-6 sm:p-10 border border-indigo-200 dark:border-indigo-500/30 bg-gradient-to-r from-indigo-50 via-white to-cyan-50 dark:from-[#0d1233] dark:via-[#090e24] dark:to-[#0c133a] flex flex-col md:flex-row items-center justify-between gap-6 text-left">
           <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-950 text-indigo-300 border border-indigo-700/50">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700/50">
               GLOBAL TALENT OPPORTUNITY
             </div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               We Are Hiring Globally Across{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-cyan-600 dark:from-purple-400 dark:to-cyan-300">
                 All Corporate &amp; Tech Fields
               </span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               Whether you specialize in artificial intelligence research, renewable grid engineering, corporate law, biotech informatics, global supply chain, or HR talent strategy&mdash;Nexus Dynamics offers unprecedented career growth.
             </p>
           </div>
@@ -328,13 +328,13 @@ export const HomePage: React.FC = () => {
       {/* ============================================================== */}
       <section id="divisions" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="text-center space-y-3">
-          <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+          <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-cyan-400">
             ENTERPRISE CAPABILITIES
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Our Business Divisions
           </h2>
-          <p className="text-sm text-slate-400 max-w-2xl mx-auto">
+          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Delivering cross-sector innovation and specialized industrial solutions across 65+ countries.
           </p>
         </div>
@@ -346,23 +346,23 @@ export const HomePage: React.FC = () => {
             return (
               <div
                 key={div.id}
-                className="nexus-glass-card rounded-2xl p-6 border border-white/10 hover:border-indigo-500/40 transition-all flex flex-col justify-between group"
+                className="nexus-glass-card rounded-2xl p-6 border border-slate-200 dark:border-white/10 hover:border-indigo-400 dark:hover:border-indigo-500/40 transition-all flex flex-col justify-between group"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-950/80 border border-indigo-500/30 text-cyan-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-200 dark:bg-indigo-950/80 dark:border-indigo-500/30 dark:text-cyan-400 flex items-center justify-center group-hover:scale-105 transition-transform">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[11px] font-bold text-slate-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
+                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2.5 py-1 rounded-full">
                       {div.roles}
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-white text-base leading-snug group-hover:text-cyan-300 transition-colors">
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base leading-snug group-hover:text-indigo-600 dark:group-hover:text-cyan-300 transition-colors">
                     {div.title}
                   </h3>
 
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                     {div.description}
                   </p>
                 </div>
@@ -370,7 +370,7 @@ export const HomePage: React.FC = () => {
                 <div className="pt-6">
                   <Link
                     to="/divisions"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-cyan-400 hover:text-indigo-700 dark:hover:text-cyan-300 transition-colors"
                   >
                     <span>Explore Solutions &amp; Roles</span>
                     <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -386,24 +386,24 @@ export const HomePage: React.FC = () => {
       {/* 3. GLOBAL PRESENCE / STRATEGIC GLOBAL HUBS (From Screenshot 2) */}
       {/* ============================================================== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="nexus-glass-card rounded-3xl p-6 sm:p-10 border border-indigo-500/20 bg-[#0a0d24]/70 space-y-8">
+        <div className="nexus-glass-card rounded-3xl p-6 sm:p-10 border border-slate-200 dark:border-indigo-500/20 bg-slate-50/80 dark:bg-[#0a0d24]/70 space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cyan-400">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-cyan-400">
                 <Globe className="w-3.5 h-3.5" />
                 <span>GLOBAL PRESENCE</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Our Strategic Global Hubs
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                 Headquartered in New York, with regional decision hubs across EMEA and APAC.
               </p>
             </div>
 
             <Link
               to="/about"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors shrink-0 shadow-xs"
             >
               <span>View All 65+ Office Locations</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -415,22 +415,22 @@ export const HomePage: React.FC = () => {
             {globalHubs.map(hub => (
               <div
                 key={hub.city}
-                className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-500/30 transition-all space-y-3"
+                className="p-5 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-indigo-400 dark:hover:border-cyan-500/30 transition-all space-y-3 shadow-xs dark:shadow-none"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white text-sm">{hub.city}</span>
+                  <span className="font-bold text-slate-900 dark:text-white text-sm">{hub.city}</span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${hub.roleColor}`}>
                     {hub.role}
                   </span>
                 </div>
 
-                <div className="text-xs text-slate-400">{hub.address}</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">{hub.address}</div>
 
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
-                  <div className="text-slate-400">
-                    Workforce: <strong className="text-white font-semibold">{hub.workforce}</strong>
+                <div className="pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs">
+                  <div className="text-slate-500 dark:text-slate-400">
+                    Workforce: <strong className="text-slate-900 dark:text-white font-semibold">{hub.workforce}</strong>
                   </div>
-                  <div className="text-cyan-400 font-medium">{hub.phone}</div>
+                  <div className="text-indigo-600 dark:text-cyan-400 font-medium">{hub.phone}</div>
                 </div>
               </div>
             ))}
@@ -444,17 +444,17 @@ export const HomePage: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div className="space-y-2">
-            <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-cyan-400">
               NEWSROOM &amp; INSIGHTS
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Latest Enterprise News
             </h2>
           </div>
 
           <Link
             to="/about"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-cyan-400 hover:text-indigo-700 dark:hover:text-cyan-300 transition-colors"
           >
             <span>Visit Global Newsroom</span>
             <ArrowRight className="w-4 h-4" />
@@ -466,7 +466,7 @@ export const HomePage: React.FC = () => {
           {enterpriseNews.map(item => (
             <div
               key={item.title}
-              className="nexus-glass-card rounded-2xl overflow-hidden border border-white/10 flex flex-col justify-between group hover:border-cyan-500/40 transition-all"
+              className="nexus-glass-card rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 flex flex-col justify-between group hover:border-indigo-400 dark:hover:border-cyan-500/40 transition-all shadow-xs dark:shadow-none"
             >
               <div>
                 {/* News Image Banner */}
@@ -477,7 +477,7 @@ export const HomePage: React.FC = () => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0d20] via-transparent to-black/20" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 dark:from-[#0a0d20] dark:via-transparent dark:to-black/20" />
                   <div className="absolute top-3 left-3">
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${item.categoryColor}`}>
                       {item.category}
@@ -487,16 +487,16 @@ export const HomePage: React.FC = () => {
 
                 {/* News Content */}
                 <div className="p-6 space-y-3">
-                  <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                    <Clock className="w-3 h-3 text-cyan-400" />
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                    <Clock className="w-3 h-3 text-indigo-600 dark:text-cyan-400" />
                     <span>{item.date} &bull; {item.readTime}</span>
                   </div>
 
-                  <h3 className="font-bold text-white text-base leading-snug group-hover:text-cyan-300 transition-colors">
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base leading-snug group-hover:text-indigo-600 dark:group-hover:text-cyan-300 transition-colors">
                     {item.title}
                   </h3>
 
-                  <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
                     {item.snippet}
                   </p>
                 </div>
@@ -505,7 +505,7 @@ export const HomePage: React.FC = () => {
               <div className="px-6 pb-6 pt-2">
                 <Link
                   to="/about"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-cyan-400 hover:text-indigo-700 dark:hover:text-cyan-300 transition-colors"
                 >
                   <span>Read Full Press Release</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -520,15 +520,15 @@ export const HomePage: React.FC = () => {
       {/* 5. DIRECT ATS & RECRUITER QUICK LAUNCH (Phase 2 & 3 Integration) */}
       {/* ============================================================== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 rounded-3xl bg-gradient-to-r from-indigo-950/60 via-[#0a0f2e] to-cyan-950/40 border border-indigo-500/30 flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div className="p-8 rounded-3xl bg-gradient-to-r from-indigo-100/90 via-slate-100 to-cyan-100/80 dark:from-indigo-950/60 dark:via-[#0a0f2e] dark:to-cyan-950/40 border border-slate-200 dark:border-indigo-500/30 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-sm dark:shadow-none">
           <div className="space-y-2 text-center lg:text-left">
-            <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-cyan-400">
               AI-POWERED CANDIDATE EVALUATION
             </div>
-            <h3 className="text-2xl font-bold text-white">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
               Instant ATS Resume Scoring &amp; Heuristic Analysis
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl">
               Upload candidate CVs (.pdf, .docx, .txt) against live open requisitions to calculate transparent 0-100 compatibility scores with instant skill gap analysis.
             </p>
           </div>
@@ -544,7 +544,7 @@ export const HomePage: React.FC = () => {
 
             <Link
               to="/careers"
-              className="px-5 py-3 rounded-xl text-xs font-semibold text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+              className="px-5 py-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-300 dark:border-white/10 transition-colors shadow-xs"
             >
               View Open Opportunities
             </Link>
