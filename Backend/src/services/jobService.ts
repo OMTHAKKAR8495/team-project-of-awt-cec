@@ -1,7 +1,8 @@
-import { FilterQuery } from 'mongoose';
+import mongoose, { FilterQuery } from 'mongoose';
 import { Job, IJob, IJobDocument, JobStatus, EmploymentType } from '../models/Job';
 import { Candidate } from '../models/Candidate';
 import { AppError } from '../middleware/error.middleware';
+import { mockStore } from './mockDataStore';
 
 export interface JobFilterParams {
   search?: string;
@@ -24,11 +25,18 @@ export interface PaginatedJobsResult {
 export const escapeRegex = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export const createJob = async (jobData: Partial<IJob>): Promise<IJobDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.createJob(jobData);
+  }
   const newJob = await Job.create(jobData);
   return newJob;
 };
 
 export const getJobs = async (params: JobFilterParams): Promise<PaginatedJobsResult> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.getJobs(params);
+  }
+
   const page = Math.max(1, params.page || 1);
   const limit = Math.min(100, Math.max(1, params.limit || 10));
   const skip = (page - 1) * limit;
@@ -69,6 +77,10 @@ export const getJobs = async (params: JobFilterParams): Promise<PaginatedJobsRes
 };
 
 export const getJobById = async (id: string): Promise<IJobDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.getJobById(id);
+  }
+
   const job = await Job.findById(id).exec();
   if (!job) {
     throw new AppError(`Job with ID '${id}' was not found.`, 404);
@@ -77,6 +89,10 @@ export const getJobById = async (id: string): Promise<IJobDocument> => {
 };
 
 export const updateJob = async (id: string, updateData: Partial<IJob>): Promise<IJobDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.updateJob(id, updateData);
+  }
+
   const updatedJob = await Job.findByIdAndUpdate(id, updateData, {
     new: true,
     runValidators: true,
@@ -90,6 +106,10 @@ export const updateJob = async (id: string, updateData: Partial<IJob>): Promise<
 };
 
 export const deleteJob = async (id: string): Promise<IJobDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.deleteJob(id);
+  }
+
   const deletedJob = await Job.findByIdAndDelete(id).exec();
   if (!deletedJob) {
     throw new AppError(`Job with ID '${id}' was not found.`, 404);

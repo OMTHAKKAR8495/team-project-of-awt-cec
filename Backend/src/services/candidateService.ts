@@ -1,7 +1,8 @@
-import { FilterQuery, Types } from 'mongoose';
+import mongoose, { FilterQuery, Types } from 'mongoose';
 import { Candidate, ICandidateDocument, ApplicationStatus } from '../models/Candidate';
 import { Job } from '../models/Job';
 import { AppError } from '../middleware/error.middleware';
+import { mockStore } from './mockDataStore';
 import {
   extractResumeText,
   extractSkillsFromText,
@@ -37,6 +38,9 @@ export interface PaginatedCandidatesResult {
  * Submits a candidate application, parses resume, computes ATS score, and stores record
  */
 export const applyCandidate = async (dto: ApplyCandidateDTO): Promise<ICandidateDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.applyCandidate(dto);
+  }
   const { name, email, phone, jobId, notes, file } = dto;
 
   try {
@@ -116,6 +120,9 @@ export const applyCandidate = async (dto: ApplyCandidateDTO): Promise<ICandidate
 export const getCandidates = async (
   params: CandidateFilterParams
 ): Promise<PaginatedCandidatesResult> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.getCandidates(params);
+  }
   const page = Math.max(1, params.page || 1);
   const limit = Math.min(100, Math.max(1, params.limit || 10));
   const skip = (page - 1) * limit;
@@ -153,6 +160,9 @@ export const getCandidates = async (
  * Retrieves a single candidate application by ID
  */
 export const getCandidateById = async (id: string): Promise<ICandidateDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.getCandidateById(id);
+  }
   const candidate = await Candidate.findById(id)
     .populate('job', 'title company status location requiredSkills')
     .exec();
@@ -172,6 +182,9 @@ export const getCandidatesByJob = async (
   page = 1,
   limit = 20
 ): Promise<PaginatedCandidatesResult> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.getCandidatesByJob(jobId, page, limit);
+  }
   // Verify job exists
   const jobExists = await Job.exists({ _id: jobId });
   if (!jobExists) {
@@ -188,6 +201,9 @@ export const updateCandidateStatus = async (
   id: string,
   status: ApplicationStatus
 ): Promise<ICandidateDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.updateCandidateStatus(id, status);
+  }
   const candidate = await Candidate.findByIdAndUpdate(
     id,
     { applicationStatus: status },
@@ -210,6 +226,9 @@ export const updateCandidateNotes = async (
   id: string,
   notes: string
 ): Promise<ICandidateDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.updateCandidateNotes(id, notes);
+  }
   const candidate = await Candidate.findByIdAndUpdate(
     id,
     { notes },
@@ -239,6 +258,9 @@ export const updateCandidate = async (
   id: string,
   updateData: UpdateCandidateDTO
 ): Promise<ICandidateDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.updateCandidate(id, updateData);
+  }
   const updates: Record<string, unknown> = {};
   if (updateData.name !== undefined) updates.name = updateData.name;
   if (updateData.email !== undefined) updates.email = updateData.email.toLowerCase();
@@ -265,6 +287,9 @@ export const updateCandidate = async (
  * Deletes a candidate application record by ID
  */
 export const deleteCandidate = async (id: string): Promise<ICandidateDocument> => {
+  if (mongoose.connection.readyState !== 1) {
+    return mockStore.deleteCandidate(id);
+  }
   const candidate = await Candidate.findByIdAndDelete(id).exec();
 
   if (!candidate) {

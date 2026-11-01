@@ -24,6 +24,7 @@ const getDatabaseStatus = (): string => {
  */
 router.get('/', (_req: Request, res: Response) => {
   const dbStatus = getDatabaseStatus();
+  const isDevFallback = mongoose.connection.readyState !== 1 && process.env.NODE_ENV === 'development';
 
   res.status(200).json({
     status: 'ok',
@@ -32,8 +33,8 @@ router.get('/', (_req: Request, res: Response) => {
     environment: process.env.NODE_ENV || 'development',
     service: 'college-group-project-api',
     database: {
-      status: dbStatus,
-      ready: dbStatus === 'connected',
+      status: isDevFallback ? 'connected (in-memory dev fallback)' : dbStatus,
+      ready: isDevFallback || dbStatus === 'connected',
     },
   });
 });

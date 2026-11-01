@@ -18,7 +18,8 @@ const router = Router();
 
 // Middleware ensuring MongoDB connection is active
 const requireDb = (_req: Request, res: Response, next: NextFunction): void => {
-  if (mongoose.connection.readyState !== 1) {
+  const isDevFallback = process.env.NODE_ENV === 'development';
+  if (mongoose.connection.readyState !== 1 && !isDevFallback) {
     res.status(503).json({
       success: false,
       message: 'Database service is unavailable. Please ensure MongoDB is running and connected.',
