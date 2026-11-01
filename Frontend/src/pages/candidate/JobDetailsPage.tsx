@@ -68,10 +68,10 @@ export const JobDetailsPage: React.FC = () => {
 
   if (error || !job) {
     return (
-      <div className="max-w-2xl mx-auto space-y-4 py-8">
+      <div className="max-w-2xl mx-auto space-y-4 px-4 sm:px-6 lg:px-8 py-8">
         <Link
           to="/jobs"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to all opportunities
@@ -106,11 +106,11 @@ export const JobDetailsPage: React.FC = () => {
     : null;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Back button */}
       <Link
         to="/jobs"
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to all opportunities
