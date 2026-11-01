@@ -749,13 +749,13 @@ B.S. in Computer Engineering | State University (2014 - 2018)`;
                 variant="primary"
                 size="sm"
                 onClick={() =>
-                  mode === 'job' && selectedJobId
-                    ? navigate(`/jobs/${selectedJobId}`)
+                  analysisResult.jobInfo?.id
+                    ? navigate(`/jobs/${analysisResult.jobInfo.id}`)
                     : navigate('/jobs')
                 }
                 rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
               >
-                {mode === 'job' && selectedJobId ? 'View Job & Apply' : 'Explore Matching Jobs'}
+                {analysisResult.jobInfo?.id ? 'View Job & Apply' : 'Explore Matching Jobs'}
               </Button>
             </div>
           </Card>
