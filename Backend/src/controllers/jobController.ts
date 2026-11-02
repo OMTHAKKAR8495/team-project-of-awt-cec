@@ -80,10 +80,12 @@ export const deleteJobHandler = async (
 ): Promise<void> => {
   try {
     const deletedJob = await jobService.deleteJob(req.params.id);
+    const id = '_id' in deletedJob ? deletedJob._id : deletedJob.id;
+    const title = 'title' in deletedJob ? deletedJob.title : undefined;
     res.status(200).json({
       success: true,
       message: 'Job deleted successfully.',
-      data: { id: (deletedJob as any)._id || (deletedJob as any).id, title: (deletedJob as any).title },
+      data: { id, title },
     });
   } catch (error) {
     next(error);

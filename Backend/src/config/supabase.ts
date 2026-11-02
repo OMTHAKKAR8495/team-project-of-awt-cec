@@ -124,9 +124,9 @@ export async function supabaseRequest<T>(
   if (!response.ok) {
     let errMessage = `Supabase error (${response.status} ${response.statusText})`;
     try {
-      const errJson = (await response.json()) as any;
+      const errJson = (await response.json()) as { message?: string; details?: string; hint?: string } | null;
       if (errJson && (errJson.message || errJson.details || errJson.hint)) {
-        errMessage = errJson.message || errJson.details || errJson.hint;
+        errMessage = errJson.message || errJson.details || errJson.hint || errMessage;
       }
     } catch {
       // safe fallback

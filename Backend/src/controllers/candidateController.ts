@@ -157,10 +157,11 @@ export const deleteCandidateHandler = async (
 ): Promise<void> => {
   try {
     const deleted = await candidateService.deleteCandidate(req.params.id);
+    const id = '_id' in deleted ? deleted._id : deleted.id;
     res.status(200).json({
       success: true,
       message: 'Candidate application record deleted successfully.',
-      data: { id: (deleted as any)._id || (deleted as any).id },
+      data: { id },
     });
   } catch (error) {
     next(error);

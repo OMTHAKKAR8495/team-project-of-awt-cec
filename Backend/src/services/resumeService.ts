@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+import mongoose, { Types } from 'mongoose';
 import { getJobById } from './jobService';
 import {
   extractResumeText,
@@ -9,10 +11,14 @@ import {
 } from '../utils/resumeAnalyzer';
 import { cleanupFile } from '../middleware/uploadMiddleware';
 import { AppError } from '../middleware/error.middleware';
+import { isSupabaseReady, supabaseRequest } from '../config/supabase';
+import { encodeFilterValue } from './supabaseDataService';
+import { ResumeAnalysis } from '../models/ResumeAnalysis';
 
 export interface AnalyzeResumeParams {
   filePath: string;
   mimeType?: string;
+  resumeName?: string;
   mode?: 'job' | 'custom' | 'general';
   jobId?: string;
   jobTitle?: string;
@@ -22,6 +28,9 @@ export interface AnalyzeResumeParams {
 }
 
 export interface DetailedAnalysisResponse extends ATSAnalysisResult {
+  _id?: string;
+  id?: string;
+  resumeName?: string;
   mode?: 'job' | 'custom' | 'general';
   generalBreakdown?: GeneralBreakdown;
   strengths?: string[];
@@ -32,16 +41,230 @@ export interface DetailedAnalysisResponse extends ATSAnalysisResult {
     requiredSkills: string[];
     preferredSkills: string[];
   };
+  createdAt?: string;
 }
+
+// In-memory persistent history cache across evaluations
+const localAnalysisHistory: DetailedAnalysisResponse[] = [];
+
+/**
+ * Persists an evaluation record to Supabase, MongoDB, and in-memory history cache.
+ */
+export const saveResumeAnalysisRecord = async (
+  record: DetailedAnalysisResponse
+): Promise<DetailedAnalysisResponse> => {
+  // Prepend to in-memory list (limit to 50 items)
+  localAnalysisHistory.unshift(record);
+  if (localAnalysisHistory.length > 50) {
+    localAnalysisHistory.pop();
+  }
+
+  // 1. Persist to Supabase if configured and connected
+  if (isSupabaseReady()) {
+    try {
+      const payload = {
+        id: record.id,
+        resume_name: record.resumeName || 'Uploaded Resume',
+        mode: record.mode || 'job',
+        job_id: record.jobInfo.id || null,
+        target_title: record.jobInfo.title || 'General Resume Quality',
+        score: record.score,
+        extracted_skills: record.extractedSkills || [],
+        matched_skills: record.matchedSkills || [],
+        missing_skills: record.missingSkills || [],
+        explanation: record.explanation || '',
+        breakdown: record.breakdown || {},
+        general_breakdown: record.generalBreakdown || null,
+        strengths: record.strengths || [],
+        recommendations: record.recommendations || [],
+        created_at: record.createdAt || new Date().toISOString(),
+      };
+
+      await supabaseRequest('/resume_analyses', {
+        method: 'POST',
+        body: payload,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes('PGRST205') || msg.includes('does not exist')) {
+        console.warn('[Supabase] resume_analyses table not yet initialized. Storing in local history buffer.');
+      } else {
+        console.warn(`[Supabase] Note on saving resume analysis: ${msg}`);
+      }
+    }
+  }
+
+  // 2. Persist to MongoDB if connected
+  try {
+    if (mongoose.connection.readyState === 1) {
+      await ResumeAnalysis.create({
+        resumeName: record.resumeName || 'Uploaded Resume',
+        mode: record.mode || 'job',
+        job: record.jobInfo.id && Types.ObjectId.isValid(record.jobInfo.id)
+          ? new Types.ObjectId(record.jobInfo.id)
+          : undefined,
+        targetTitle: record.jobInfo.title || 'General Resume Quality',
+        score: record.score,
+        extractedSkills: record.extractedSkills || [],
+        matchedSkills: record.matchedSkills || [],
+        missingSkills: record.missingSkills || [],
+        explanation: record.explanation || '',
+        breakdown: record.breakdown || {},
+        generalBreakdown: record.generalBreakdown,
+        strengths: record.strengths || [],
+        recommendations: record.recommendations || [],
+      });
+    }
+  } catch {
+    // safe fallback
+  }
+
+  return record;
+};
+
+/**
+ * Retrieves past resume ATS analysis history from Supabase, MongoDB, or local buffer.
+ */
+export const getResumeAnalysisHistory = async (limit = 20): Promise<DetailedAnalysisResponse[]> => {
+  // 1. Try Supabase
+  if (isSupabaseReady()) {
+    try {
+      const rows = await supabaseRequest<any[]>(
+        `/resume_analyses?select=*&order=created_at.desc&limit=${Math.min(100, Math.max(1, limit))}`
+      );
+      if (Array.isArray(rows) && rows.length > 0) {
+        return rows.map(r => ({
+          _id: r.id,
+          id: r.id,
+          resumeName: r.resume_name,
+          mode: r.mode,
+          score: r.score,
+          extractedSkills: r.extracted_skills || [],
+          matchedSkills: r.matched_skills || [],
+          missingSkills: r.missing_skills || [],
+          explanation: r.explanation,
+          breakdown: r.breakdown || {},
+          generalBreakdown: r.general_breakdown,
+          strengths: r.strengths || [],
+          recommendations: r.recommendations || [],
+          jobInfo: {
+            id: r.job_id || undefined,
+            title: r.target_title,
+            requiredSkills: [],
+            preferredSkills: [],
+          },
+          createdAt: r.created_at,
+        }));
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  // 2. Try MongoDB
+  try {
+    if (mongoose.connection.readyState === 1) {
+      const docs = await ResumeAnalysis.find().sort({ createdAt: -1 }).limit(limit).lean().exec();
+      if (docs && docs.length > 0) {
+        return docs.map((d: any) => ({
+          _id: String(d._id),
+          id: String(d._id),
+          resumeName: d.resumeName,
+          mode: d.mode,
+          score: d.score,
+          extractedSkills: d.extractedSkills || [],
+          matchedSkills: d.matchedSkills || [],
+          missingSkills: d.missingSkills || [],
+          explanation: d.explanation,
+          breakdown: d.breakdown || {},
+          generalBreakdown: d.generalBreakdown,
+          strengths: d.strengths || [],
+          recommendations: d.recommendations || [],
+          jobInfo: {
+            id: d.job ? String(d.job) : undefined,
+            title: d.targetTitle,
+            requiredSkills: [],
+            preferredSkills: [],
+          },
+          createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : new Date().toISOString(),
+        }));
+      }
+    }
+  } catch {
+    // safe fallback
+  }
+
+  // 3. Fallback to local memory buffer
+  return localAnalysisHistory.slice(0, limit);
+};
+
+/**
+ * Deletes a single analysis record by ID.
+ */
+export const deleteResumeAnalysisById = async (id: string): Promise<boolean> => {
+  const localIndex = localAnalysisHistory.findIndex(i => i.id === id || i._id === id);
+  if (localIndex !== -1) {
+    localAnalysisHistory.splice(localIndex, 1);
+  }
+
+  if (isSupabaseReady()) {
+    try {
+      await supabaseRequest(`/resume_analyses?id=eq.${encodeFilterValue(id)}`, {
+        method: 'DELETE',
+      });
+    } catch {
+      // safe fallback
+    }
+  }
+
+  try {
+    if (mongoose.connection.readyState === 1 && Types.ObjectId.isValid(id)) {
+      await ResumeAnalysis.findByIdAndDelete(id).exec();
+    }
+  } catch {
+    // safe fallback
+  }
+
+  return true;
+};
+
+/**
+ * Clears all analysis records.
+ */
+export const clearResumeAnalysisHistory = async (): Promise<boolean> => {
+  localAnalysisHistory.length = 0;
+
+  if (isSupabaseReady()) {
+    try {
+      await supabaseRequest(`/resume_analyses?id=not.is.null`, {
+        method: 'DELETE',
+      });
+    } catch {
+      // safe fallback
+    }
+  }
+
+  try {
+    if (mongoose.connection.readyState === 1) {
+      await ResumeAnalysis.deleteMany({}).exec();
+    }
+  } catch {
+    // safe fallback
+  }
+
+  return true;
+};
 
 /**
  * Analyzes an uploaded resume file against job requirements, custom skill parameters,
- * or performs a comprehensive general ATS quality check.
+ * or performs a comprehensive general ATS quality check, then persists the record.
  */
 export const analyzeUploadedResume = async (
   params: AnalyzeResumeParams
 ): Promise<DetailedAnalysisResponse> => {
   const { filePath, mimeType, jobId, mode } = params;
+  const analysisId = crypto.randomUUID();
+  const createdAtIso = new Date().toISOString();
 
   try {
     // 1. Extract text from file
@@ -51,18 +274,26 @@ export const analyzeUploadedResume = async (
     const extractedSkills = extractSkillsFromText(rawText);
 
     // If General Resume Score mode is requested or no specific target job/skills are provided
-    const isGeneral = mode === 'general' || (!jobId && !params.jobTitle && (!params.requiredSkills || params.requiredSkills.length === 0));
-    if (isGeneral) {
+    if (mode === 'general' || (!mode && !jobId && !params.jobTitle && (!params.requiredSkills || params.requiredSkills.length === 0))) {
       const generalResult = calculateGeneralResumeScore(rawText, extractedSkills);
-      return {
+      const response: DetailedAnalysisResponse = {
+        _id: analysisId,
+        id: analysisId,
+        resumeName: params.resumeName || 'Uploaded Resume',
         ...generalResult,
+        mode: 'general',
         jobInfo: {
           id: undefined,
           title: 'General Resume Quality & ATS Readiness',
           requiredSkills: [],
           preferredSkills: [],
         },
+        createdAt: createdAtIso,
       };
+
+      // Persist to database history
+      await saveResumeAnalysisRecord(response);
+      return response;
     }
 
     let targetTitle = params.jobTitle || 'Custom Job Position';
@@ -101,16 +332,24 @@ export const analyzeUploadedResume = async (
       targetRequirements
     );
 
-    return {
+    const response: DetailedAnalysisResponse = {
+      _id: analysisId,
+      id: analysisId,
+      resumeName: params.resumeName || 'Uploaded Resume',
       ...atsResult,
-      mode: 'job',
+      mode: jobId ? 'job' : 'custom',
       jobInfo: {
         id: jobId,
         title: targetTitle,
         requiredSkills: targetRequired,
         preferredSkills: targetPreferred,
       },
+      createdAt: createdAtIso,
     };
+
+    // Persist to database history
+    await saveResumeAnalysisRecord(response);
+    return response;
   } finally {
     // Always remove temporary file from disk after evaluation
     await cleanupFile(filePath);
