@@ -1,11 +1,73 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
+import crypto from 'crypto';
+import { spawnSync } from 'child_process';
 import mammoth from 'mammoth';
 import { AppError } from '../middleware/error.middleware';
 
 // Dynamic import or class resolution for pdf-parse v2 compatibility
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pdfModule = require('pdf-parse');
+
+/**
+ * Resolves location of the Windows OCR PowerShell helper script
+ */
+const resolveOcrScript = (): string | null => {
+  const candidates = [
+    path.resolve(__dirname, 'ocr.ps1'),
+    path.resolve(__dirname, '../utils/ocr.ps1'),
+    path.resolve(__dirname, '../../src/utils/ocr.ps1'),
+    path.resolve(process.cwd(), 'Backend/src/utils/ocr.ps1'),
+    path.resolve(process.cwd(), 'Backend/dist/utils/ocr.ps1'),
+    path.resolve(process.cwd(), 'src/utils/ocr.ps1'),
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  return null;
+};
+
+/**
+ * Extracts text from an image buffer using Windows native WinRT OCR
+ */
+export const extractTextFromImageBuffer = (imageBuffer: Buffer | Uint8Array): string => {
+  if (process.platform !== 'win32') return '';
+  const ocrScript = resolveOcrScript();
+  if (!ocrScript) return '';
+
+  const tmpImg = path.join(
+    os.tmpdir(),
+    `ocr-${Date.now()}-${crypto.randomBytes(6).toString('hex')}.png`
+  );
+  try {
+    const buf = Buffer.isBuffer(imageBuffer) ? imageBuffer : Buffer.from(imageBuffer);
+    fs.writeFileSync(tmpImg, buf);
+    const result = spawnSync(
+      'powershell.exe',
+      ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', ocrScript, tmpImg],
+      {
+        encoding: 'utf8',
+        timeout: 25000,
+        windowsHide: true,
+      }
+    );
+    if (result.status === 0 && result.stdout) {
+      return result.stdout.trim();
+    }
+    return '';
+  } catch {
+    return '';
+  } finally {
+    if (fs.existsSync(tmpImg)) {
+      try {
+        fs.unlinkSync(tmpImg);
+      } catch {
+        // Ignored
+      }
+    }
+  }
+};
 
 /**
  * Standardized ATS Analysis Result interface
@@ -225,6 +287,12 @@ export const extractResumeText = async (
       // PDFParse v2 class handling with guaranteed resource release in finally block
       let parser: {
         getText: () => Promise<{ text?: string } | string>;
+        getImage?: () => Promise<{
+          pages?: Array<{
+            images?: Array<{ data?: Buffer | Uint8Array; dataUrl?: string }>;
+          }>;
+          total?: number;
+        }>;
         destroy?: () => Promise<void>;
       } | null = null;
       try {
@@ -232,6 +300,35 @@ export const extractResumeText = async (
           parser = new pdfModule.PDFParse({ data: buffer });
           const textResult = await parser!.getText();
           text = typeof textResult === 'string' ? textResult : (textResult?.text ?? '');
+
+          // If extracted text from standard font streams is insufficient (< 20 characters),
+          // perform OCR fallback on embedded images (e.g. Canva or image-scanned resumes)
+          const nonWsChars = text.replace(/[\s\r\n\t\-]+/g, '').trim();
+          if (nonWsChars.length < 20 && typeof parser!.getImage === 'function') {
+            try {
+              const imgResult = await parser!.getImage();
+              if (imgResult && imgResult.total && imgResult.total > 0 && imgResult.pages) {
+                const ocrPages: string[] = [];
+                for (const page of imgResult.pages) {
+                  if (page.images && Array.isArray(page.images)) {
+                    for (const img of page.images) {
+                      if (img.data && (Buffer.isBuffer(img.data) || (img.data as unknown) instanceof Uint8Array || (img.data as Uint8Array).length > 0)) {
+                        const ocrText = extractTextFromImageBuffer(img.data);
+                        if (ocrText && ocrText.length > 0) {
+                          ocrPages.push(ocrText);
+                        }
+                      }
+                    }
+                  }
+                }
+                if (ocrPages.length > 0) {
+                  text = ocrPages.join('\n\n');
+                }
+              }
+            } catch {
+              // Fall through to standard validation
+            }
+          }
         } else if (typeof pdfModule === 'function') {
           const result = await pdfModule(buffer);
           text = typeof result === 'string' ? result : (result?.text ?? '');
