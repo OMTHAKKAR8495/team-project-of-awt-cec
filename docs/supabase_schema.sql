@@ -130,3 +130,29 @@ DROP TRIGGER IF EXISTS trg_candidates_updated_at ON public.candidates;
 CREATE TRIGGER trg_candidates_updated_at
 BEFORE UPDATE ON public.candidates
 FOR EACH ROW EXECUTE FUNCTION update_timestamp();
+
+-- ============================================================================
+-- 7. RESUME ATS ANALYSES / EVALUATION HISTORY TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.resume_analyses (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    resume_name VARCHAR(255) NOT NULL,
+    mode VARCHAR(20) NOT NULL DEFAULT 'job', -- 'job' | 'custom' | 'general'
+    job_id UUID REFERENCES public.jobs(id) ON DELETE SET NULL,
+    target_title VARCHAR(255) NOT NULL DEFAULT 'General Resume Quality',
+    score INTEGER NOT NULL CHECK (score >= 0 AND score <= 100),
+    extracted_skills TEXT[] DEFAULT '{}',
+    matched_skills TEXT[] DEFAULT '{}',
+    missing_skills TEXT[] DEFAULT '{}',
+    explanation TEXT,
+    breakdown JSONB DEFAULT '{}'::jsonb,
+    general_breakdown JSONB,
+    strengths TEXT[] DEFAULT '{}',
+    recommendations TEXT[] DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for querying analysis history
+CREATE INDEX IF NOT EXISTS idx_resume_analyses_created_at ON public.resume_analyses(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_resume_analyses_score ON public.resume_analyses(score DESC);
+CREATE INDEX IF NOT EXISTS idx_resume_analyses_job_id ON public.resume_analyses(job_id);
