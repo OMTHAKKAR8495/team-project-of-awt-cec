@@ -39,4 +39,5 @@ export interface CandidateQueryParams {
   limit?: number;
   jobId?: string;
   status?: ApplicationStatus;
+  search?: string;
 }

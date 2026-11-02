@@ -19,6 +19,9 @@ export interface GeneralBreakdown {
 }
 
 export interface DetailedAnalysisResponse {
+  _id?: string;
+  id?: string;
+  resumeName?: string;
   score: number;
   mode?: 'job' | 'custom' | 'general';
   breakdown: ATSBreakdown;
@@ -35,4 +38,5 @@ export interface DetailedAnalysisResponse {
     requiredSkills: string[];
     preferredSkills: string[];
   };
+  createdAt?: string;
 }

@@ -248,11 +248,13 @@ export const getJobs = async (
       const paginated = jobs.slice((page - 1) * limit, page * limit);
       return {
         success: true,
-        count: paginated.length,
-        total,
-        page,
-        totalPages: Math.max(1, Math.ceil(total / limit)),
         data: paginated,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(total / limit)),
+        },
       };
     }
   } catch {
@@ -596,11 +598,13 @@ export const getCandidates = async (
       const paginated = list.slice((page - 1) * limit, page * limit);
       return {
         success: true,
-        count: paginated.length,
-        total,
-        page,
-        totalPages: Math.max(1, Math.ceil(total / limit)),
         data: paginated,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.max(1, Math.ceil(total / limit)),
+        },
       };
     }
   } catch {
@@ -820,6 +824,32 @@ export const analyzeResume = async (
     }
   );
   return response.data;
+};
+
+/**
+ * Retrieves past resume ATS evaluation history.
+ */
+export const getResumeAnalysisHistory = async (
+  limit = 20
+): Promise<{ success: boolean; data: DetailedAnalysisResponse[]; total: number }> => {
+  const response = await api.get<{ success: boolean; data: DetailedAnalysisResponse[]; total: number }>(
+    `/analyze-resume/history?limit=${limit}`
+  );
+  return response.data;
+};
+
+/**
+ * Deletes a single analysis record from history by ID.
+ */
+export const deleteResumeAnalysis = async (id: string): Promise<void> => {
+  await api.delete(`/analyze-resume/history/${id}`);
+};
+
+/**
+ * Clears all resume analysis history.
+ */
+export const clearResumeAnalysisHistory = async (): Promise<void> => {
+  await api.delete('/analyze-resume/history');
 };
 
 /**
