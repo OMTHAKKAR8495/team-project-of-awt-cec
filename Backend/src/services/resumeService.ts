@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import mongoose, { Types } from 'mongoose';
 import { getJobById } from './jobService';
 import {
   extractResumeText,
@@ -13,7 +12,6 @@ import { cleanupFile } from '../middleware/uploadMiddleware';
 import { AppError } from '../middleware/error.middleware';
 import { isSupabaseReady, supabaseRequest } from '../config/supabase';
 import { encodeFilterValue } from './supabaseDataService';
-import { ResumeAnalysis } from '../models/ResumeAnalysis';
 
 export interface AnalyzeResumeParams {
   filePath: string;
@@ -94,36 +92,11 @@ export const saveResumeAnalysisRecord = async (
     }
   }
 
-  // 2. Persist to MongoDB if connected
-  try {
-    if (mongoose.connection.readyState === 1) {
-      await ResumeAnalysis.create({
-        resumeName: record.resumeName || 'Uploaded Resume',
-        mode: record.mode || 'job',
-        job: record.jobInfo.id && Types.ObjectId.isValid(record.jobInfo.id)
-          ? new Types.ObjectId(record.jobInfo.id)
-          : undefined,
-        targetTitle: record.jobInfo.title || 'General Resume Quality',
-        score: record.score,
-        extractedSkills: record.extractedSkills || [],
-        matchedSkills: record.matchedSkills || [],
-        missingSkills: record.missingSkills || [],
-        explanation: record.explanation || '',
-        breakdown: record.breakdown || {},
-        generalBreakdown: record.generalBreakdown,
-        strengths: record.strengths || [],
-        recommendations: record.recommendations || [],
-      });
-    }
-  } catch {
-    // safe fallback
-  }
-
   return record;
 };
 
 /**
- * Retrieves past resume ATS analysis history from Supabase, MongoDB, or local buffer.
+ * Retrieves past resume ATS analysis history from Supabase, or local buffer fallback.
  */
 export const getResumeAnalysisHistory = async (limit = 20): Promise<DetailedAnalysisResponse[]> => {
   // 1. Try Supabase
@@ -161,40 +134,7 @@ export const getResumeAnalysisHistory = async (limit = 20): Promise<DetailedAnal
     }
   }
 
-  // 2. Try MongoDB
-  try {
-    if (mongoose.connection.readyState === 1) {
-      const docs = await ResumeAnalysis.find().sort({ createdAt: -1 }).limit(limit).lean().exec();
-      if (docs && docs.length > 0) {
-        return docs.map((d: any) => ({
-          _id: String(d._id),
-          id: String(d._id),
-          resumeName: d.resumeName,
-          mode: d.mode,
-          score: d.score,
-          extractedSkills: d.extractedSkills || [],
-          matchedSkills: d.matchedSkills || [],
-          missingSkills: d.missingSkills || [],
-          explanation: d.explanation,
-          breakdown: d.breakdown || {},
-          generalBreakdown: d.generalBreakdown,
-          strengths: d.strengths || [],
-          recommendations: d.recommendations || [],
-          jobInfo: {
-            id: d.job ? String(d.job) : undefined,
-            title: d.targetTitle,
-            requiredSkills: [],
-            preferredSkills: [],
-          },
-          createdAt: d.createdAt ? new Date(d.createdAt).toISOString() : new Date().toISOString(),
-        }));
-      }
-    }
-  } catch {
-    // safe fallback
-  }
-
-  // 3. Fallback to local memory buffer
+  // 2. Fallback to local memory buffer
   return localAnalysisHistory.slice(0, limit);
 };
 
@@ -217,14 +157,6 @@ export const deleteResumeAnalysisById = async (id: string): Promise<boolean> => 
     }
   }
 
-  try {
-    if (mongoose.connection.readyState === 1 && Types.ObjectId.isValid(id)) {
-      await ResumeAnalysis.findByIdAndDelete(id).exec();
-    }
-  } catch {
-    // safe fallback
-  }
-
   return true;
 };
 
@@ -242,14 +174,6 @@ export const clearResumeAnalysisHistory = async (): Promise<boolean> => {
     } catch {
       // safe fallback
     }
-  }
-
-  try {
-    if (mongoose.connection.readyState === 1) {
-      await ResumeAnalysis.deleteMany({}).exec();
-    }
-  } catch {
-    // safe fallback
   }
 
   return true;
